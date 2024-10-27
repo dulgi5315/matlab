@@ -7,54 +7,72 @@ class Application(tk.Tk):
 
         self.title("라즈베리파이 애플리케이션")
         
-        # 전체 화면 모드 설정
         self.attributes('-fullscreen', True)
-        
-        # ESC 키를 눌러 전체 화면을 종료할 수 있도록 설정
         self.bind('<Escape>', self.end_fullscreen)
 
         self.create_widgets()
 
     def create_widgets(self):
-        # 배경 프레임 (하얀색)
         background = tk.Frame(self, bg="white")
         background.place(relwidth=1, relheight=1)
 
-        # 온도 표시 프레임
         temp_frame = tk.Frame(background, bg="white")
-        temp_frame.place(relx=0, rely=0, relwidth=1, relheight=0.2)
+        temp_frame.place(relx=0, rely=0, relwidth=1, relheight=0.3)
 
-        # 온도 표시 스타일
-        temp_font = tkfont.Font(family="Helvetica", size=16, weight="bold")
-        temp_style = {"font": temp_font, "bg": "white", "fg": "black"}
+        label_font = tkfont.Font(family="Helvetica", size=14)
+        temp_font = tkfont.Font(family="Helvetica", size=20, weight="bold")
 
         # 머리 온도
-        head_temp = tk.Label(temp_frame, text="머리: 36.5°C", **temp_style)
-        head_temp.place(relx=0.1, rely=0.5, anchor="w")
+        head_label = tk.Label(temp_frame, text="머리", font=label_font, bg="white")
+        head_label.place(relx=0.2, rely=0.1, anchor="center")
+        head_temp_frame = tk.Frame(temp_frame, bg="lightgray", bd=2, relief="solid")
+        head_temp_frame.place(relx=0.2, rely=0.5, relwidth=0.25, relheight=0.6, anchor="center")
+        self.head_temp = tk.Label(head_temp_frame, text="36.5°C", font=temp_font, bg="lightgray")
+        self.head_temp.place(relx=0.5, rely=0.5, anchor="center")
 
         # 몸통 온도
-        body_temp = tk.Label(temp_frame, text="몸통: 36.7°C", **temp_style)
-        body_temp.place(relx=0.5, rely=0.5, anchor="center")
+        body_label = tk.Label(temp_frame, text="몸통", font=label_font, bg="white")
+        body_label.place(relx=0.5, rely=0.1, anchor="center")
+        body_temp_frame = tk.Frame(temp_frame, bg="lightgray", bd=2, relief="solid")
+        body_temp_frame.place(relx=0.5, rely=0.5, relwidth=0.25, relheight=0.6, anchor="center")
+        self.body_temp = tk.Label(body_temp_frame, text="36.7°C", font=temp_font, bg="lightgray")
+        self.body_temp.place(relx=0.5, rely=0.5, anchor="center")
 
         # 다리 온도
-        leg_temp = tk.Label(temp_frame, text="다리: 36.3°C", **temp_style)
-        leg_temp.place(relx=0.9, rely=0.5, anchor="e")
+        leg_label = tk.Label(temp_frame, text="다리", font=label_font, bg="white")
+        leg_label.place(relx=0.8, rely=0.1, anchor="center")
+        leg_temp_frame = tk.Frame(temp_frame, bg="lightgray", bd=2, relief="solid")
+        leg_temp_frame.place(relx=0.8, rely=0.5, relwidth=0.25, relheight=0.6, anchor="center")
+        self.leg_temp = tk.Label(leg_temp_frame, text="36.3°C", font=temp_font, bg="lightgray")
+        self.leg_temp.place(relx=0.5, rely=0.5, anchor="center")
 
-        # 버튼 스타일
+        # 버튼 스타일 및 배치
         button_font = tkfont.Font(family="Helvetica", size=14, weight="bold")
         button_style = {"font": button_font, "bg": "skyblue", "fg": "navy"}
 
-        # 기본 설정 버튼
         default_settings_btn = tk.Button(background, text="기본 설정", **button_style)
-        default_settings_btn.place(relx=0.3, rely=0.5, relwidth=0.4, relheight=0.1)
+        default_settings_btn.place(relx=0.3, rely=0.6, relwidth=0.4, relheight=0.1)
 
-        # 사용자 지정설정 버튼
         custom_settings_btn = tk.Button(background, text="사용자 지정설정", **button_style)
-        custom_settings_btn.place(relx=0.3, rely=0.7, relwidth=0.4, relheight=0.1)
+        custom_settings_btn.place(relx=0.3, rely=0.8, relwidth=0.4, relheight=0.1)
 
     def end_fullscreen(self, event=None):
         self.attributes("-fullscreen", False)
 
+    def update_temperatures(self):
+        # 여기에 실제 온도를 가져오는 코드를 추가합니다.
+        head_temp = 36.5  # 예시 값
+        body_temp = 36.7
+        leg_temp = 36.3
+        
+        self.head_temp.config(text=f"{head_temp:.1f}°C")
+        self.body_temp.config(text=f"{body_temp:.1f}°C")
+        self.leg_temp.config(text=f"{leg_temp:.1f}°C")
+        
+        # 1초마다 업데이트
+        self.after(1000, self.update_temperatures)
+
 if __name__ == "__main__":
     app = Application()
+    app.update_temperatures()  # 온도 업데이트 시작
     app.mainloop()
