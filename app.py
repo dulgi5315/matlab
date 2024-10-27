@@ -17,7 +17,7 @@ class Application(tk.Tk):
         background.place(relwidth=1, relheight=1)
 
         temp_frame = tk.Frame(background, bg="white")
-        temp_frame.place(relx=0, rely=0, relwidth=1, relheight=0.3)
+        temp_frame.place(relx=0, rely=0.1, relwidth=1, relheight=0.3)  # y 위치를 0.1로 변경
 
         label_font = tkfont.Font(family="Helvetica", size=14)
         temp_font = tkfont.Font(family="Helvetica", size=20, weight="bold")
@@ -47,14 +47,14 @@ class Application(tk.Tk):
         self.leg_temp.place(relx=0.5, rely=0.5, anchor="center")
 
         # 버튼 스타일 및 배치
-        button_font = tkfont.Font(family="Helvetica", size=14, weight="bold")
+        button_font = tkfont.Font(family="Helvetica", size=18, weight="bold")  # 폰트 크기 증가
         button_style = {"font": button_font, "bg": "skyblue", "fg": "navy"}
 
         default_settings_btn = tk.Button(background, text="기본 설정", **button_style)
-        default_settings_btn.place(relx=0.3, rely=0.6, relwidth=0.4, relheight=0.1)
+        default_settings_btn.place(relx=0.5, rely=0.6, relwidth=0.6, relheight=0.15, anchor="center")  # 크기와 위치 조정
 
         custom_settings_btn = tk.Button(background, text="사용자 지정설정", **button_style)
-        custom_settings_btn.place(relx=0.3, rely=0.8, relwidth=0.4, relheight=0.1)
+        custom_settings_btn.place(relx=0.5, rely=0.8, relwidth=0.6, relheight=0.15, anchor="center")  # 크기와 위치 조정
 
     def end_fullscreen(self, event=None):
         self.attributes("-fullscreen", False)
