@@ -73,7 +73,6 @@ class StepSettingWindow(tk.Toplevel):
         self.title("단계 설정")
         self.attributes('-fullscreen', False)
         
-        # 창 크기를 화면 크기로 설정
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         self.geometry(f"{screen_width}x{screen_height}+0+0")
@@ -85,7 +84,6 @@ class StepSettingWindow(tk.Toplevel):
         self.attributes('-fullscreen', True)
         
     def create_widgets(self):
-        # 배경 프레임
         background = tk.Frame(self, bg="white")
         background.place(relwidth=1, relheight=1)
         
@@ -103,23 +101,35 @@ class StepSettingWindow(tk.Toplevel):
                                  font=value_font, bg="white")
         self.step_value.place(relx=0.5, rely=0.35, anchor="center")
         
+        # 스케일 바를 포함할 프레임 생성
+        scale_frame = tk.Frame(background, bg="white")
+        scale_frame.place(relx=0.5, rely=0.5, anchor="center", width=400, height=80)
+        
         # 단계 조절 바
-        self.step_scale = ttk.Scale(background, 
+        self.step_scale = ttk.Scale(scale_frame, 
                                   from_=1, 
                                   to=10,
                                   orient="horizontal",
                                   length=400,
                                   command=self.update_step_value)
         self.step_scale.set(1)
-        self.step_scale.place(relx=0.5, rely=0.5, anchor="center")
+        self.step_scale.place(relx=0.5, rely=0, anchor="n")
         
         # 단계 표시 레이블들
+        label_width = 30  # 레이블의 폭
+        scale_width = 400  # 스케일의 전체 폭
+        padding = 15  # 첫 번째와 마지막 레이블의 여백
+        
+        # 레이블 사이의 간격 계산
+        spacing = (scale_width - 2 * padding) / 9
+        
         for i in range(10):
-            label = tk.Label(background, text=str(i+1), 
-                           font=tkfont.Font(size=12), bg="white")
-            # 스케일의 위치에 맞춰 레이블 배치
-            x_pos = 0.5 + (i - 4.5) * 0.044  # 간격 조정
-            label.place(relx=x_pos, rely=0.57, anchor="center")
+            label = tk.Label(scale_frame, text=str(i+1), 
+                           font=tkfont.Font(size=12), bg="white",
+                           width=1)  # 레이블 폭 고정
+            # x 위치 계산: 첫 번째 여백 + (간격 * 인덱스)
+            x_pos = padding + (i * spacing)
+            label.place(x=x_pos, rely=0.7, anchor="center")
         
         # 확인 버튼
         button_style = {"font": title_font, "bg": "skyblue", "fg": "navy"}
