@@ -76,3 +76,5 @@ if __name__ == "__main__":
     app = Application()
     app.update_temperatures()  # 온도 업데이트 시작
     app.mainloop()
+
+    #asdasdasdasdasdasdas
