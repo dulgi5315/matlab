@@ -6,10 +6,24 @@ class TemperatureSettingWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
         
-        # 새 창 설정
+        # 새 창 기본 설정
         self.title("정온 설정")
+        self.attributes('-fullscreen', False)  # 먼저 일반 창으로 시작
+        
+        # 창 크기를 화면 크기로 설정
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        self.geometry(f"{screen_width}x{screen_height}+0+0")
+        
+        self.create_widgets()
+        
+        # 창이 완전히 로드된 후 전체 화면으로 전환
+        self.after(100, self.set_fullscreen)
+        
+    def set_fullscreen(self):
         self.attributes('-fullscreen', True)
         
+    def create_widgets(self):
         # 배경 프레임
         background = tk.Frame(self, bg="white")
         background.place(relwidth=1, relheight=1)
@@ -57,12 +71,25 @@ class Application(tk.Tk):
         super().__init__()
 
         self.title("라즈베리파이 애플리케이션")
-        self.attributes('-fullscreen', True)
+        self.attributes('-fullscreen', False)  # 먼저 일반 창으로 시작
+        
+        # 창 크기를 화면 크기로 설정
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        self.geometry(f"{screen_width}x{screen_height}+0+0")
+        
+        self.create_widgets()
+        
+        # 창이 완전히 로드된 후 전체 화면으로 전환
+        self.after(100, self.set_fullscreen)
+        
         self.bind('<Escape>', self.end_fullscreen)
 
-        self.create_widgets()
-
+    def set_fullscreen(self):
+        self.attributes('-fullscreen', True)
+        
     def create_widgets(self):
+        # 배경 프레임
         background = tk.Frame(self, bg="white")
         background.place(relwidth=1, relheight=1)
 
@@ -119,7 +146,7 @@ class Application(tk.Tk):
 
     def open_temp_settings(self):
         temp_window = TemperatureSettingWindow(self)
-        temp_window.grab_set()  # 새 창을 모달로 만듦
+        temp_window.grab_set()
 
     def end_fullscreen(self, event=None):
         self.attributes("-fullscreen", False)
