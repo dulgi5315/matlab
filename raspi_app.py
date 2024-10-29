@@ -145,6 +145,80 @@ class StepSettingWindow(tk.Toplevel):
         step = int(float(value))
         self.step_value.config(text=f"{step}단계")
 
+class CustomSettingWindow(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        
+        self.title("사용자 설정")
+        self.attributes('-fullscreen', False)
+        
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        self.geometry(f"{screen_width}x{screen_height}+0+0")
+        
+        self.create_widgets()
+        self.after(100, self.set_fullscreen)
+        
+    def set_fullscreen(self):
+        self.attributes('-fullscreen', True)
+        
+    def create_widgets(self):
+        background = tk.Frame(self, bg="white")
+        background.place(relwidth=1, relheight=1)
+        
+        # 폰트 설정
+        title_font = tkfont.Font(family="Helvetica", size=20, weight="bold")
+        label_font = tkfont.Font(family="Helvetica", size=16)
+        value_font = tkfont.Font(family="Helvetica", size=18, weight="bold")
+        
+        # 제목
+        title_label = tk.Label(background, text="부위별 온도를 설정하세요", 
+                             font=title_font, bg="white")
+        title_label.place(relx=0.5, rely=0.1, anchor="center")
+        
+        # 각 부위별 온도 설정 프레임 생성
+        parts = ["머리", "몸통", "다리"]
+        self.temp_values = {}  # 온도 값 레이블을 저장할 딕셔너리
+        
+        for i, part in enumerate(parts):
+            # 부위별 프레임
+            frame = tk.Frame(background, bg="white")
+            frame.place(relx=0.5, rely=0.25 + (i * 0.2), relwidth=0.8, relheight=0.15, 
+                       anchor="center")
+            
+            # 부위 이름
+            part_label = tk.Label(frame, text=f"{part}", font=label_font, bg="white")
+            part_label.place(relx=0.1, rely=0.5, anchor="w")
+            
+            # 온도 값 표시
+            self.temp_values[part] = tk.Label(frame, text="25.0°C", 
+                                            font=value_font, bg="white")
+            self.temp_values[part].place(relx=0.3, rely=0.5, anchor="w")
+            
+            # 온도 조절 바
+            scale = ttk.Scale(frame, 
+                            from_=25, 
+                            to=40,
+                            orient="horizontal",
+                            length=400,
+                            command=lambda v, p=part: self.update_temp_value(p, v))
+            scale.set(25.0)
+            scale.place(relx=0.5, rely=0.5, anchor="w")
+        
+        # 확인 버튼
+        button_style = {"font": title_font, "bg": "skyblue", "fg": "navy"}
+        confirm_btn = tk.Button(background, text="확인", 
+                              command=self.destroy, **button_style)
+        confirm_btn.place(relx=0.5, rely=0.85, relwidth=0.3, relheight=0.1, 
+                         anchor="center")
+        
+        # ESC 키로 창 닫기
+        self.bind('<Escape>', lambda e: self.destroy())
+        
+    def update_temp_value(self, part, value):
+        temp = float(value)
+        self.temp_values[part].config(text=f"{temp:.1f}°C")
+
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -221,9 +295,11 @@ class Application(tk.Tk):
                               anchor="center")
 
         # 사용자 설정 버튼
-        custom_settings_btn = tk.Button(background, text="사용자 설정", **button_style)
+        custom_settings_btn = tk.Button(background, text="사용자 설정", 
+                              command=self.open_custom_settings,
+                              **button_style)
         custom_settings_btn.place(relx=0.5, rely=0.8, relwidth=0.6, relheight=0.12, 
-                                anchor="center")
+                         anchor="center")
 
     def open_temp_settings(self):
         temp_window = TemperatureSettingWindow(self)
@@ -232,6 +308,10 @@ class Application(tk.Tk):
     def open_step_settings(self):
         step_window = StepSettingWindow(self)
         step_window.grab_set()
+        
+    def open_custom_settings(self):
+        custom_window = CustomSettingWindow(self)
+        custom_window.grab_set()	
 
     def end_fullscreen(self, event=None):
         self.attributes("-fullscreen", False)
