@@ -97,50 +97,40 @@ class CustomSettingWindow(tk.Toplevel):
                              font=title_font, bg="white")
         title_label.place(relx=0.5, rely=0.1, anchor="center")
         
-        # 컨테이너 프레임 생성 (모든 부위별 설정을 포함)
-        container = tk.Frame(background, bg="white")
-        container.place(relx=0.5, rely=0.45, relwidth=0.8, relheight=0.6, 
-                       anchor="center")
+        # 메인 컨테이너
+        main_container = tk.Frame(background, bg="white")
+        main_container.place(relx=0.5, rely=0.45, relwidth=0.9, relheight=0.6, 
+                           anchor="center")
         
         # 각 부위별 온도 설정
         parts = ["머리", "몸통", "다리"]
         self.temp_values = {}
         
         for i, part in enumerate(parts):
-            # 부위별 프레임
-            frame = tk.Frame(container, bg="white")
-            frame.place(relx=0.5, rely=0.2 + (i * 0.25), relwidth=0.9, relheight=0.2, 
-                       anchor="center")
-            
-            # 왼쪽 정보 프레임 (부위 이름과 온도 값)
-            info_frame = tk.Frame(frame, bg="white")
-            info_frame.place(relx=0, rely=0.5, relwidth=0.3, relheight=1, 
-                           anchor="w")
+            # 부위별 컨테이너
+            part_container = tk.Frame(main_container, bg="white")
+            part_container.place(relx=0.5, rely=0.2 + (i * 0.25), relwidth=1, 
+                               relheight=0.2, anchor="center")
             
             # 부위 이름
-            part_label = tk.Label(info_frame, text=f"{part}", 
+            part_label = tk.Label(part_container, text=part, 
                                 font=label_font, bg="white")
-            part_label.place(relx=0, rely=0.5, anchor="w")
+            part_label.place(relx=0.1, rely=0.5, anchor="center")
             
             # 온도 값 표시
-            self.temp_values[part] = tk.Label(info_frame, text="25.0°C", 
+            self.temp_values[part] = tk.Label(part_container, text="25.0°C", 
                                             font=value_font, bg="white")
-            self.temp_values[part].place(relx=1, rely=0.5, anchor="e")
+            self.temp_values[part].place(relx=0.25, rely=0.5, anchor="center")
             
-            # 온도 조절 바 프레임
-            scale_frame = tk.Frame(frame, bg="white")
-            scale_frame.place(relx=0.35, rely=0.5, relwidth=0.65, relheight=1, 
-                            anchor="w")
-            
-            # 온도 조절 바
-            scale = ttk.Scale(scale_frame, 
+            # 온도 조절 바 (고정된 크기로 설정)
+            scale = ttk.Scale(part_container, 
                             from_=25, 
                             to=40,
                             orient="horizontal",
+                            length=400,  # 고정된 길이 사용
                             command=lambda v, p=part: self.update_temp_value(p, v))
             scale.set(25.0)
-            # scale의 width를 프레임에 맞추어 설정
-            scale.place(relx=0, rely=0.5, relwidth=1, anchor="w")
+            scale.place(relx=0.6, rely=0.5, anchor="center")  # 중앙 정렬
         
         # 확인 버튼
         button_style = {"font": title_font, "bg": "skyblue", "fg": "navy"}
