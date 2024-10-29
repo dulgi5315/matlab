@@ -66,6 +66,75 @@ class TemperatureSettingWindow(tk.Toplevel):
         temp = float(value)
         self.temp_value.config(text=f"{temp:.1f}°C")
 
+class StepSettingWindow(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        
+        self.title("단계 설정")
+        self.attributes('-fullscreen', False)
+        
+        # 창 크기를 화면 크기로 설정
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        self.geometry(f"{screen_width}x{screen_height}+0+0")
+        
+        self.create_widgets()
+        self.after(100, self.set_fullscreen)
+        
+    def set_fullscreen(self):
+        self.attributes('-fullscreen', True)
+        
+    def create_widgets(self):
+        # 배경 프레임
+        background = tk.Frame(self, bg="white")
+        background.place(relwidth=1, relheight=1)
+        
+        # 폰트 설정
+        title_font = tkfont.Font(family="Helvetica", size=20, weight="bold")
+        value_font = tkfont.Font(family="Helvetica", size=24, weight="bold")
+        
+        # 제목
+        title_label = tk.Label(background, text="온도 단계를 설정하세요", 
+                             font=title_font, bg="white")
+        title_label.place(relx=0.5, rely=0.2, anchor="center")
+        
+        # 단계 값 표시 레이블
+        self.step_value = tk.Label(background, text="1단계", 
+                                 font=value_font, bg="white")
+        self.step_value.place(relx=0.5, rely=0.35, anchor="center")
+        
+        # 단계 조절 바
+        self.step_scale = ttk.Scale(background, 
+                                  from_=1, 
+                                  to=10,
+                                  orient="horizontal",
+                                  length=400,
+                                  command=self.update_step_value)
+        self.step_scale.set(1)
+        self.step_scale.place(relx=0.5, rely=0.5, anchor="center")
+        
+        # 단계 표시 레이블들
+        for i in range(10):
+            label = tk.Label(background, text=str(i+1), 
+                           font=tkfont.Font(size=12), bg="white")
+            # 스케일의 위치에 맞춰 레이블 배치
+            x_pos = 0.5 + (i - 4.5) * 0.044  # 간격 조정
+            label.place(relx=x_pos, rely=0.57, anchor="center")
+        
+        # 확인 버튼
+        button_style = {"font": title_font, "bg": "skyblue", "fg": "navy"}
+        confirm_btn = tk.Button(background, text="확인", 
+                              command=self.destroy, **button_style)
+        confirm_btn.place(relx=0.5, rely=0.7, relwidth=0.3, relheight=0.1, 
+                         anchor="center")
+        
+        # ESC 키로 창 닫기
+        self.bind('<Escape>', lambda e: self.destroy())
+        
+    def update_step_value(self, value):
+        step = int(float(value))
+        self.step_value.config(text=f"{step}단계")
+
 class Application(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -135,7 +204,9 @@ class Application(tk.Tk):
                               anchor="center")
 
         # 단계 설정 버튼
-        step_settings_btn = tk.Button(background, text="단계 설정", **button_style)
+        step_settings_btn = tk.Button(background, text="단계 설정", 
+                                    command=self.open_step_settings,
+                                    **button_style)
         step_settings_btn.place(relx=0.5, rely=0.65, relwidth=0.6, relheight=0.12, 
                               anchor="center")
 
@@ -147,6 +218,10 @@ class Application(tk.Tk):
     def open_temp_settings(self):
         temp_window = TemperatureSettingWindow(self)
         temp_window.grab_set()
+        
+    def open_step_settings(self):
+        step_window = StepSettingWindow(self)
+        step_window.grab_set()
 
     def end_fullscreen(self, event=None):
         self.attributes("-fullscreen", False)
