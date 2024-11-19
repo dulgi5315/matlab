@@ -305,7 +305,7 @@ class TemperatureSettingWindow(QWidget):
                 self.temp = temp
                 self.setFixedSize(100, 350)  # 크기 조정
                 self.font = QFont()
-                self.font.setPointSize(20)
+                self.font.setPointSize(40)
                 self.font.setBold(True)
                 
             def paintEvent(self, event):
