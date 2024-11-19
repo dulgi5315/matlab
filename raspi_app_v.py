@@ -135,16 +135,16 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(bottom_widget)
         
     def show_menu(self):
-        def show_menu(self):
-            self.menu_window = MenuWindow()
-            screen = QApplication.primaryScreen().geometry()
-            menu_size = self.menu_window.geometry()
+        self.menu_window = MenuWindow()
             
-            center_x = (screen.width() - menu_size.width()) // 2
-            center_y = (screen.height() - menu_size.height()) // 2
+        screen = QApplication.primaryScreen().geometry()
+        menu_size = self.menu_window.geometry()
             
-            self.menu_window.move(center_x, center_y)
-            self.menu_window.show()
+        center_x = (screen.width() - menu_size.width()) // 2
+        center_y = (screen.height() - menu_size.height()) // 2
+            
+        self.menu_window.move(center_x, center_y)
+        self.menu_window.show()
 
 class MenuWindow(QWidget):
     def __init__(self):
