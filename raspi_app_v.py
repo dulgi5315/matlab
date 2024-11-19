@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
         # 화면 중앙에 위치하도록 x, y 좌표 계산
         # y 좌표를 화면 높이의 40% 위치로 조정
         center_x = (screen.width() - menu_size.width()) // 2
-        center_y = int(screen.height() * 0.4 - menu_size.height() // 2)
+        center_y = int(screen.height() * 0.2 - menu_size.height() // 2)
         
         # 메뉴 창 위치 설정
         self.menu_window.move(center_x, center_y)
