@@ -32,20 +32,7 @@ class MainWindow(QMainWindow):
         top_layout.setSpacing(10)  # 위젯 간 간격 축소
         top_layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
         
-        # 메뉴 버튼
-        menu_btn = QPushButton('≡')
-        menu_btn.setFixedSize(50, 50)  # 크기 축소
-        menu_btn.clicked.connect(self.show_menu)
-        menu_btn.setStyleSheet("""
-            QPushButton {
-                font-size: 24px;
-                background-color: #f0f0f0;
-                border: 2px solid #ddd;
-                border-radius: 8px;
-            }
-        """)
-        
-		# 회전된 메뉴 텍스트를 그리기 위한 paintEvent 오버라이드
+        # 메뉴 버튼 생성 부분
         class RotatedMenuButton(QPushButton):
             def paintEvent(self, event):
                 super().paintEvent(event)
@@ -55,7 +42,6 @@ class MainWindow(QMainWindow):
                 painter.rotate(-90)
                 painter.drawText(QRect(-15, -15, 30, 30), Qt.AlignCenter, '≡')
 
-        # 기존 버튼을 회전된 버튼으로 교체
         menu_btn = RotatedMenuButton()
         menu_btn.setFixedSize(50, 50)
         menu_btn.setStyleSheet("""
@@ -65,6 +51,8 @@ class MainWindow(QMainWindow):
                 border-radius: 8px;
             }
         """)
+        # 여기에 클릭 이벤트 연결 추가
+        menu_btn.clicked.connect(self.show_menu)
         top_layout.addWidget(menu_btn)
         
         # 회전된 텍스트를 표시할 커스텀 위젯
