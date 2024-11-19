@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
                 painter = QPainter(self)
                 painter.setFont(self.font)
                 painter.translate(self.width()/2, self.height()/2)
-                painter.rotate(90)
+                painter.rotate(-90)
                 painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, self.text)
 
 		# 상단 사각형 3개
