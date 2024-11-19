@@ -63,6 +63,12 @@ class MainWindow(QMainWindow):
             layout = QVBoxLayout(box)
             label = QLabel(temp)
             label.setAlignment(Qt.AlignCenter)
+            
+            # 라벨 회전 설정
+            rotation = QGraphicsRotation()
+            rotation.setAngle(90)
+            label.setGraphicsEffect(rotation)
+            
             label.setStyleSheet("""
                 QLabel {
                     font-size: 40px;
