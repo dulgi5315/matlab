@@ -82,7 +82,7 @@ class MainWindow(QMainWindow):
         # 중간 여백
         main_layout.addStretch()
         
-        # 하단 영역
+		# 하단 영역
         bottom_widget = QWidget()
         bottom_layout = QHBoxLayout(bottom_widget)
         bottom_layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
                 border-radius: 8px;
             }
         """)
-        bottom_box.setFixedHeight(180)  # 높이 고정
+        bottom_box.setFixedSize(540, 200)  # 너비를 540으로, 높이를 200으로 수정
         bottom_layout.addWidget(bottom_box)
         
         main_layout.addWidget(bottom_widget)
