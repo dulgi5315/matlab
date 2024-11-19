@@ -56,7 +56,7 @@ class MainWindow(QMainWindow):
                     border-radius: 8px;
                 }
             """)
-            box.setFixedSize(180, 120)  # 크기 고정
+            box.setFixedSize(180, 180)  # 높이를 180으로 증가
             top_layout.addWidget(box)
         
         # 종료 버튼
@@ -97,10 +97,8 @@ class MainWindow(QMainWindow):
                 border-radius: 8px;
             }
         """)
-        bottom_box.setFixedHeight(80)  # 높이 고정
+        bottom_box.setFixedHeight(150)  # 높이를 150으로 증가
         bottom_layout.addWidget(bottom_box)
-        
-        main_layout.addWidget(bottom_widget)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
