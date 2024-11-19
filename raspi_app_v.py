@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
                 painter.rotate(-90)
                 painter.drawText(QRect(-15, -15, 30, 30), Qt.AlignCenter, '≡')
 
-        menu_btn = RotatedMenuButton()
+        menu_btn = RotatedButton('≡')
         menu_btn.setFixedSize(50, 50)
         menu_btn.setStyleSheet("""
             QPushButton {
