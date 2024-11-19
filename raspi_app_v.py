@@ -256,6 +256,8 @@ class ModeSettingWindow(QWidget):
                     background-color: #e0e0e0;
                 }
             """)
+            if text == "정온 설정":
+                btn.clicked.connect(self.show_temperature_setting)
             layout.addWidget(btn)
         
         self.setLayout(layout)
@@ -264,6 +266,84 @@ class ModeSettingWindow(QWidget):
         if event.type() == QEvent.WindowDeactivate:
             self.close()
         return super().eventFilter(obj, event)
+
+#정온 설정 창
+class TemperatureSettingWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_ShowWithoutActivating)
+        self.installEventFilter(self)
+        self.initUI()
+    
+    def initUI(self):
+        self.setFixedSize(300, 400)
+        
+        layout = QVBoxLayout()
+        
+        # 온도 표시 레이블
+        self.temp_label = QLabel('25.0°C')
+        self.temp_label.setAlignment(Qt.AlignCenter)
+        self.temp_label.setStyleSheet("""
+            QLabel {
+                font-size: 40px;
+                font-weight: bold;
+                color: #333;
+                background-color: white;
+                border: 2px solid #ddd;
+                border-radius: 10px;
+                padding: 20px;
+            }
+        """)
+        
+        # 스크롤 다이얼
+        self.dial = QDial()
+        self.dial.setMinimum(50)  # 25.0도
+        self.dial.setMaximum(80)  # 40.0도
+        self.dial.setValue(50)     # 초기값 25.0도
+        self.dial.setNotchesVisible(True)
+        self.dial.setStyleSheet("""
+            QDial {
+                background-color: white;
+            }
+        """)
+        self.dial.valueChanged.connect(self.update_temperature)
+        
+        # 확인 버튼
+        confirm_btn = QPushButton('확인')
+        confirm_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                padding: 10px;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+        """)
+        confirm_btn.clicked.connect(self.close)
+        
+        layout.addWidget(self.temp_label)
+        layout.addWidget(self.dial)
+        layout.addWidget(confirm_btn)
+        
+        self.setLayout(layout)
+    
+    def update_temperature(self):
+        # 다이얼 값을 온도로 변환 (50~80 → 25.0~40.0)
+        temp = self.dial.value() / 2
+        self.temp_label.setText(f'{temp:.1f}°C')
+    
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.WindowDeactivate:
+            self.close()
+        return super().eventFilter(obj, event)
+
+
+
 
 class RotatedButton(QPushButton):
     def __init__(self, text):
@@ -282,6 +362,10 @@ class RotatedButton(QPushButton):
         rect.moveCenter(QPoint(0, 0))  # 중앙 정렬
         
         painter.drawText(rect, Qt.AlignCenter, self.btn_text)
+
+
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
