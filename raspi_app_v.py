@@ -133,20 +133,18 @@ class MainWindow(QMainWindow):
         menu_size = self.menu_window.geometry()
         
         # 화면 중앙에 위치하도록 x, y 좌표 계산
-        # y 좌표를 화면 높이의 40% 위치로 조정
         center_x = (screen.width() - menu_size.width()) // 2
-        center_y = int(screen.height() * 0.2 - menu_size.height() // 2)
+        center_y = (screen.height() - menu_size.height()) // 2
         
         # 메뉴 창 위치 설정
         self.menu_window.move(center_x, center_y)
         self.menu_window.show()
 
 class MenuWindow(QWidget):
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
-        # 창 속성을 Tool로 설정하여 작업 표시줄에 표시되지 않도록 함
+        self.parent = parent
         self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
-        # 창이 포커스를 잃으면 자동으로 닫히도록 설정
         self.setAttribute(Qt.WA_ShowWithoutActivating)
         self.installEventFilter(self)
         self.initUI()
@@ -191,11 +189,69 @@ class MenuWindow(QWidget):
                 background-color: #e0e0e0;
             }
         """)
+        mode_btn.clicked.connect(self.show_mode_setting)
         
         layout.addWidget(reserve_btn)
         layout.addWidget(mode_btn)
         
         self.setLayout(layout)
+        
+    def show_mode_setting(self):
+        self.close()  # 메뉴 창 닫기
+        self.mode_window = ModeSettingWindow()
+        
+        # 화면 중앙에 위치 설정
+        screen = QApplication.primaryScreen().geometry()
+        window_size = self.mode_window.geometry()
+        center_x = (screen.width() - window_size.width()) // 2
+        center_y = int(screen.height() * 0.4 - window_size.height() // 2)
+        
+        self.mode_window.move(center_x, center_y)
+        self.mode_window.show()
+
+class ModeSettingWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_ShowWithoutActivating)
+        self.installEventFilter(self)
+        self.initUI()
+    
+    def initUI(self):
+        self.setFixedSize(500, 400)  # 4개의 버튼이 들어갈 수 있도록 너비 증가
+        
+        layout = QHBoxLayout()
+        
+        # 버튼 텍스트와 크기 설정
+        buttons_info = [
+            "정온 설정",
+            "단계 설정",
+            "사용자 설정",
+            "학습 설정"
+        ]
+        
+        for text in buttons_info:
+            btn = RotatedButton(text)
+            btn.setFixedSize(100, 350)
+            btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #f0f0f0;
+                    border: 2px solid #ddd;
+                    border-radius: 10px;
+                    font-size: 16px;
+                }
+                QPushButton:hover {
+                    background-color: #e0e0e0;
+                }
+            """)
+            layout.addWidget(btn)
+        
+        self.setLayout(layout)
+    
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.WindowDeactivate:
+            self.close()
+        return super().eventFilter(obj, event)
 
 class RotatedButton(QPushButton):
     def __init__(self, text):
