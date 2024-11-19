@@ -97,8 +97,10 @@ class MainWindow(QMainWindow):
                 border-radius: 8px;
             }
         """)
-        bottom_box.setFixedHeight(150)  # 높이를 150으로 증가
+        bottom_box.setFixedHeight(180)  # 높이 고정
         bottom_layout.addWidget(bottom_box)
+        
+        main_layout.addWidget(bottom_widget)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
