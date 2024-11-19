@@ -11,8 +11,17 @@ class MainWindow(QMainWindow):
     def initUI(self):
         # 메인 윈도우 설정
         self.setWindowTitle('전기매트 컨트롤러')
-        self.setGeometry(0, 0, 800, 480)  # 7인치 화면을 가로모드로 변경
-        self.setFixedSize(800, 480)  # 크기 고정
+        
+        # 전체화면 설정
+        self.showFullScreen()  # 전체화면으로 표시
+        
+        # 화면 해상도 얻기
+        screen = QApplication.primaryScreen().geometry()
+        self.setGeometry(0, 0, screen.width(), screen.height())
+        
+        # ESC 키로 종료할 수 있도록 단축키 설정
+        self.shortcut = QShortcut(QKeySequence('Esc'), self)
+        self.shortcut.activated.connect(self.close)
         
         # 중앙 위젯 생성
         central_widget = QWidget()
