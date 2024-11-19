@@ -12,8 +12,8 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('전기매트 컨트롤러')
         self.showFullScreen()
         
-        screen = QApplication.primaryScreen().geometry()
-        self.setGeometry(0, 0, screen.width(), screen.height())
+        # 7인치 디스플레이 해상도에 맞춤
+        self.setGeometry(0, 0, 800, 480)
         
         # ESC 단축키
         self.shortcut = QShortcut(QKeySequence('Esc'), self)
@@ -23,22 +23,24 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
-        main_layout.setContentsMargins(20, 20, 20, 20)  # 여백 설정
+        main_layout.setContentsMargins(10, 10, 10, 10)  # 여백 축소
+        main_layout.setSpacing(10)  # 위젯 간 간격 축소
         
         # 상단 영역
         top_widget = QWidget()
         top_layout = QHBoxLayout(top_widget)
-        top_layout.setSpacing(20)  # 위젯 간 간격
+        top_layout.setSpacing(10)  # 위젯 간 간격 축소
+        top_layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
         
         # 메뉴 버튼
-        menu_btn = QPushButton('≡')  # 메뉴 아이콘
-        menu_btn.setFixedSize(60, 60)
+        menu_btn = QPushButton('≡')
+        menu_btn.setFixedSize(50, 50)  # 크기 축소
         menu_btn.setStyleSheet("""
             QPushButton {
                 font-size: 24px;
                 background-color: #f0f0f0;
                 border: 2px solid #ddd;
-                border-radius: 10px;
+                border-radius: 8px;
             }
         """)
         top_layout.addWidget(menu_btn)
@@ -51,15 +53,15 @@ class MainWindow(QMainWindow):
                 QFrame {
                     border: 2px solid #ddd;
                     background-color: white;
-                    border-radius: 10px;
+                    border-radius: 8px;
                 }
             """)
-            box.setMinimumSize(200, 150)
+            box.setFixedSize(180, 120)  # 크기 고정
             top_layout.addWidget(box)
         
         # 종료 버튼
-        exit_btn = QPushButton('×')  # 종료 아이콘
-        exit_btn.setFixedSize(60, 60)
+        exit_btn = QPushButton('×')
+        exit_btn.setFixedSize(50, 50)  # 크기 축소
         exit_btn.clicked.connect(self.close)
         exit_btn.setStyleSheet("""
             QPushButton {
@@ -67,7 +69,7 @@ class MainWindow(QMainWindow):
                 background-color: #ff6b6b;
                 color: white;
                 border: none;
-                border-radius: 10px;
+                border-radius: 8px;
             }
             QPushButton:hover {
                 background-color: #ff5252;
@@ -83,6 +85,7 @@ class MainWindow(QMainWindow):
         # 하단 영역
         bottom_widget = QWidget()
         bottom_layout = QHBoxLayout(bottom_widget)
+        bottom_layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
         
         # 하단 긴 사각형
         bottom_box = QFrame()
@@ -91,10 +94,10 @@ class MainWindow(QMainWindow):
             QFrame {
                 border: 2px solid #ddd;
                 background-color: white;
-                border-radius: 10px;
+                border-radius: 8px;
             }
         """)
-        bottom_box.setMinimumHeight(100)
+        bottom_box.setFixedHeight(80)  # 높이 고정
         bottom_layout.addWidget(bottom_box)
         
         main_layout.addWidget(bottom_widget)
