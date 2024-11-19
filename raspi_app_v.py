@@ -136,16 +136,29 @@ class MainWindow(QMainWindow):
         
     def show_menu(self):
         self.menu_window = MenuWindow()
+        # 메뉴 버튼 위치를 기준으로 메뉴 창 위치 설정
+        button_pos = self.sender().mapToGlobal(QPoint(0, 0))
+        self.menu_window.move(button_pos.x() + 60, button_pos.y())
         self.menu_window.show()
 
 class MenuWindow(QWidget):
     def __init__(self):
         super().__init__()
+        # 창 속성을 Tool로 설정하여 작업 표시줄에 표시되지 않도록 함
+        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
+        # 창이 포커스를 잃으면 자동으로 닫히도록 설정
+        self.setAttribute(Qt.WA_ShowWithoutActivating)
+        self.installEventFilter(self)
         self.initUI()
-        
+    
+    def eventFilter(self, obj, event):
+        # 창이 포커스를 잃으면 닫기
+        if event.type() == QEvent.WindowDeactivate:
+            self.close()
+        return super().eventFilter(obj, event)
+
     def initUI(self):
-        # 창 설정
-        self.setWindowTitle('메뉴')
+        # 창 크기 설정
         self.setFixedSize(300, 150)
         
         # 메인 레이아웃
