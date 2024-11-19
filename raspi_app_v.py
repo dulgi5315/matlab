@@ -135,10 +135,19 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(bottom_widget)
         
     def show_menu(self):
+        def show_menu(self):
         self.menu_window = MenuWindow()
-        # 메뉴 버튼 위치를 기준으로 메뉴 창 위치 설정
-        button_pos = self.sender().mapToGlobal(QPoint(0, 0))
-        self.menu_window.move(button_pos.x() + 60, button_pos.y())
+        
+        # 화면의 중앙 위치 계산
+        screen = QApplication.primaryScreen().geometry()
+        menu_size = self.menu_window.geometry()
+        
+        # 화면 중앙에 위치하도록 x, y 좌표 계산
+        center_x = (screen.width() - menu_size.width()) // 2
+        center_y = (screen.height() - menu_size.height()) // 2
+        
+        # 메뉴 창 위치 설정
+        self.menu_window.move(center_x, center_y)
         self.menu_window.show()
 
 class MenuWindow(QWidget):
