@@ -158,13 +158,13 @@ class MenuWindow(QWidget):
         return super().eventFilter(obj, event)
 
     def initUI(self):
-        self.setFixedSize(300, 150)
+        self.setFixedSize(300, 400)
         
         layout = QHBoxLayout()
         
         # 예약 버튼
         reserve_btn = RotatedButton('예약')
-        reserve_btn.setFixedSize(120, 120)
+        reserve_btn.setFixedSize(120, 350)
         reserve_btn.setStyleSheet("""
             QPushButton {
                 background-color: #f0f0f0;
@@ -179,7 +179,7 @@ class MenuWindow(QWidget):
         
         # 모드 설정 버튼
         mode_btn = RotatedButton('모드 설정')
-        mode_btn.setFixedSize(120, 120)
+        mode_btn.setFixedSize(120, 350)
         mode_btn.setStyleSheet("""
             QPushButton {
                 background-color: #f0f0f0;
