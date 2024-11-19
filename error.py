@@ -1,0 +1,1 @@
+AttributeError: 'QLabel' object has no attribute 'setTransform'AttributeError: 'QLabel' object has no attribute 'setTransform'
