@@ -115,7 +115,7 @@ class MainWindow(QMainWindow):
         
         # 하단 사각형
         bottom_rect = QWidget()
-        bottom_rect.setFixedWidth(180 * 3 + 60)  # 상단 사각형 3개의 너비(180*3) + 사이 간격(10*2)
+        bottom_rect.setFixedWidth(180 * 3 + 50)  # 상단 사각형 3개의 너비(180*3) + 사이 간격(10*2)
         bottom_rect.setStyleSheet("""
             QWidget {
                 background-color: white;
