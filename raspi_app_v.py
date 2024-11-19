@@ -32,18 +32,42 @@ class MainWindow(QMainWindow):
         top_layout.setSpacing(10)  # 위젯 간 간격 축소
         top_layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
         
+        # 회전된 메뉴 버튼용 커스텀 위젯
+        class RotatedButton(QPushButton):
+            def __init__(self, text, parent=None):
+                super().__init__(text, parent)
+                self.setText("")  # 기본 텍스트 제거
+                self.text = text
+                self.font = QFont()
+                self.font.setPointSize(16)
+                self.font.setBold(True)
+                
+            def paintEvent(self, event):
+                super().paintEvent(event)  # 기본 버튼 배경 그리기
+                painter = QPainter(self)
+                painter.setFont(self.font)
+                painter.setPen(Qt.white)  # 텍스트 색상 설정
+                painter.translate(self.width()/2, self.height()/2)
+                painter.rotate(-90)
+                painter.drawText(QRect(-80, -15, 160, 30), Qt.AlignCenter, self.text)
+
         # 메뉴 버튼
-        menu_btn = QPushButton('≡')
-        menu_btn.setFixedSize(50, 100)  # 크기 축소
-        menu_btn.setStyleSheet("""
+        menu_button = RotatedButton("MENU")
+        menu_button.setStyleSheet("""
             QPushButton {
-                font-size: 24px;
-                background-color: #f0f0f0;
-                border: 2px solid #ddd;
+                background-color: #2196F3;
+                color: white;
+                border: none;
                 border-radius: 8px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #1976D2;
             }
         """)
-        top_layout.addWidget(menu_btn)
+        menu_button.setFixedSize(100, 200)
+        top_layout.addWidget(menu_button)
         
         # 회전된 텍스트를 표시할 커스텀 위젯
         class RotatedLabel(QWidget):
