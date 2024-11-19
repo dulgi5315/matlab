@@ -205,12 +205,10 @@ class RotatedButton(QPushButton):
     def paintEvent(self, event):
         super().paintEvent(event)
         painter = QPainter(self)
-        painter.setFont(QFont('', 24))
+        painter.setFont(QFont('', 14))
         painter.translate(self.width()/2, self.height()/2)
         painter.rotate(-90)
-        metrics = painter.fontMetrics()
-        text_width = metrics.horizontalAdvance(self.btn_text)
-        painter.drawText(QRect(-text_width/2, -10, text_width, 20), Qt.AlignCenter, self.btn_text)
+        painter.drawText(QRect(-15, -15, 30, 30), Qt.AlignCenter, self.btn_text)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
