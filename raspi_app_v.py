@@ -227,8 +227,8 @@ class MenuWindow(QWidget):
         # 화면 중앙에 위치 설정
         screen = QApplication.primaryScreen().geometry()
         window_size = self.mode_window.geometry()
-        center_x = (screen.width() - menu_size.width()) // 2
-        center_y = (screen.height() - menu_size.height()) // 2
+        center_x = (screen.width() - window_size.width()) // 2
+        center_y = (screen.height() - window_size.height()) // 2
         
         self.mode_window.move(center_x, center_y)
         self.mode_window.show()
