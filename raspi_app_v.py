@@ -45,7 +45,23 @@ class MainWindow(QMainWindow):
         """)
         top_layout.addWidget(menu_btn)
         
-                # 상단 사각형 3개
+        # 회전된 텍스트를 표시할 커스텀 위젯
+        class RotatedLabel(QWidget):
+            def __init__(self, text, parent=None):
+                super().__init__(parent)
+                self.text = text
+                self.font = QFont()
+                self.font.setPointSize(20)
+                self.font.setBold(True)
+                
+            def paintEvent(self, event):
+                painter = QPainter(self)
+                painter.setFont(self.font)
+                painter.translate(self.width()/2, self.height()/2)
+                painter.rotate(90)
+                painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, self.text)
+
+		# 상단 사각형 3개
         temperatures = ['36.5', '37.0', '37.5']
         for temp in temperatures:
             box = QFrame()
@@ -61,26 +77,7 @@ class MainWindow(QMainWindow):
             
             # 온도 라벨 추가
             layout = QVBoxLayout(box)
-            label = QLabel()
-            
-            # 회전된 텍스트를 그리기 위한 설정
-            font = QFont()
-            font.setPointSize(20)
-            font.setBold(True)
-            label.setFont(font)
-            
-            # 각 라벨에 대해 고유한 paintEvent 함수 생성
-            def make_paint_event(temperature):
-                def paintEvent(event):
-                    painter = QPainter(label)
-                    painter.setFont(font)
-                    painter.translate(label.width()/2, label.height()/2)
-                    painter.rotate(90)
-                    painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, temperature)
-                    painter.end()
-                return paintEvent
-            
-            label.paintEvent = make_paint_event(temp)
+            label = RotatedLabel(temp)
             layout.addWidget(label)
             top_layout.addWidget(box)
         
