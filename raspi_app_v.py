@@ -208,9 +208,12 @@ class RotatedButton(QPushButton):
         painter.setFont(QFont('', 14))
         painter.translate(self.width()/2, self.height()/2)
         painter.rotate(-90)
-        metrics = painter.fontMetrics()
-        text_width = metrics.horizontalAdvance(self.btn_text)
-        painter.drawText(QRect(-text_width/2, -10, text_width, 20), Qt.AlignCenter, self.btn_text)
+        rect = QRect()
+        rect.setWidth(100)  # 텍스트 영역의 너비
+        rect.setHeight(20)  # 텍스트 영역의 높이
+        rect.moveCenter(QPoint(0, 0))  # 중앙 정렬
+        
+        painter.drawText(rect, Qt.AlignCenter, self.btn_text)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
