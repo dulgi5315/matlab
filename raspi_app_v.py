@@ -46,7 +46,8 @@ class MainWindow(QMainWindow):
         top_layout.addWidget(menu_btn)
         
         # 상단 사각형 3개
-        for _ in range(3):
+        temperatures = ['36.5', '37.0', '37.5']
+        for temp in temperatures:
             box = QFrame()
             box.setFrameStyle(QFrame.Box | QFrame.Plain)
             box.setStyleSheet("""
@@ -56,7 +57,21 @@ class MainWindow(QMainWindow):
                     border-radius: 8px;
                 }
             """)
-            box.setFixedSize(180, 180)  # 높이를 180으로 증가
+            box.setFixedSize(180, 180)
+            
+            # 온도 라벨 추가
+            layout = QVBoxLayout(box)
+            label = QLabel(temp)
+            label.setAlignment(Qt.AlignCenter)
+            label.setStyleSheet("""
+                QLabel {
+                    font-size: 40px;
+                    font-weight: bold;
+                    color: #333;
+                }
+            """)
+            layout.addWidget(label)
+            
             top_layout.addWidget(box)
         
         # 종료 버튼
