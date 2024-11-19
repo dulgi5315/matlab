@@ -282,6 +282,9 @@ class ModeSettingWindow(QWidget):
 
 #정온 설정 창
 class TemperatureSettingWindow(QWidget):
+    # 클래스 변수로 저장된 온도 추가
+    saved_temperature = 25.0
+    
     def __init__(self):
         super().__init__()
         self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
@@ -295,7 +298,7 @@ class TemperatureSettingWindow(QWidget):
         layout = QVBoxLayout()
         
         # 온도 표시 레이블
-        self.temp_label = QLabel('25.0°C')
+        self.temp_label = QLabel(f'{self.saved_temperature:.1f}°C')
         self.temp_label.setAlignment(Qt.AlignCenter)
         self.temp_label.setStyleSheet("""
             QLabel {
@@ -306,21 +309,36 @@ class TemperatureSettingWindow(QWidget):
                 border: 2px solid #ddd;
                 border-radius: 10px;
                 padding: 20px;
+                margin: 20px;
             }
         """)
         
-        # 스크롤 다이얼
-        self.dial = QDial()
-        self.dial.setMinimum(50)  # 25.0도
-        self.dial.setMaximum(80)  # 40.0도
-        self.dial.setValue(50)     # 초기값 25.0도
-        self.dial.setNotchesVisible(True)
-        self.dial.setStyleSheet("""
-            QDial {
-                background-color: white;
+        # 스크롤바
+        self.scroll = QScrollBar(Qt.Vertical)
+        self.scroll.setMinimum(50)  # 25.0도
+        self.scroll.setMaximum(80)  # 40.0도
+        self.scroll.setValue(int(self.saved_temperature * 2))  # 저장된 온도로 초기값 설정
+        self.scroll.setStyleSheet("""
+            QScrollBar:vertical {
+                border: 2px solid #ddd;
+                border-radius: 5px;
+                background: white;
+                width: 60px;
+                margin: 0px 0px 0px 0px;
+            }
+            QScrollBar::handle:vertical {
+                background: #f0f0f0;
+                border-radius: 3px;
+                min-height: 20px;
+            }
+            QScrollBar::handle:vertical:hover {
+                background: #e0e0e0;
+            }
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+                height: 0px;
             }
         """)
-        self.dial.valueChanged.connect(self.update_temperature)
+        self.scroll.valueChanged.connect(self.update_temperature)
         
         # 확인 버튼
         confirm_btn = QPushButton('확인')
@@ -332,23 +350,29 @@ class TemperatureSettingWindow(QWidget):
                 border-radius: 10px;
                 padding: 10px;
                 font-size: 16px;
+                margin: 20px;
             }
             QPushButton:hover {
                 background-color: #45a049;
             }
         """)
-        confirm_btn.clicked.connect(self.close)
+        confirm_btn.clicked.connect(self.save_and_close)
         
         layout.addWidget(self.temp_label)
-        layout.addWidget(self.dial)
+        layout.addWidget(self.scroll, 1)  # 스크롤바에 stretch factor 1 추가
         layout.addWidget(confirm_btn)
         
         self.setLayout(layout)
     
     def update_temperature(self):
-        # 다이얼 값을 온도로 변환 (50~80 → 25.0~40.0)
-        temp = self.dial.value() / 2
+        # 스크롤바 값을 온도로 변환 (50~80 → 25.0~40.0)
+        temp = self.scroll.value() / 2
         self.temp_label.setText(f'{temp:.1f}°C')
+    
+    def save_and_close(self):
+        # 현재 온도를 클래스 변수에 저장
+        TemperatureSettingWindow.saved_temperature = self.scroll.value() / 2
+        self.close()
     
     def eventFilter(self, obj, event):
         if event.type() == QEvent.WindowDeactivate:
