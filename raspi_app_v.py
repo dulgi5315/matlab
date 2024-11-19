@@ -111,7 +111,7 @@ class MainWindow(QMainWindow):
         bottom_layout.setContentsMargins(0, 0, 0, 0)
         
         # 메뉴 버튼 너비만큼 왼쪽 여백 추가
-        bottom_layout.addSpacing(30)  # 메뉴 버튼(50) + 간격(10)
+        bottom_layout.addSpacing(15)  # 메뉴 버튼(50) + 간격(10)
         
         # 하단 사각형
         bottom_rect = QWidget()
