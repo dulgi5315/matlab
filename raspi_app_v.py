@@ -57,7 +57,24 @@ class MainWindow(QMainWindow):
             box.setMinimumSize(200, 150)
             top_layout.addWidget(box)
         
-        top_layout.addStretch()  # 우측 여백을 위한 stretch
+        # 종료 버튼
+        exit_btn = QPushButton('×')  # 종료 아이콘
+        exit_btn.setFixedSize(60, 60)
+        exit_btn.clicked.connect(self.close)
+        exit_btn.setStyleSheet("""
+            QPushButton {
+                font-size: 24px;
+                background-color: #ff6b6b;
+                color: white;
+                border: none;
+                border-radius: 10px;
+            }
+            QPushButton:hover {
+                background-color: #ff5252;
+            }
+        """)
+        top_layout.addWidget(exit_btn)
+        
         main_layout.addWidget(top_widget)
         
         # 중간 여백
