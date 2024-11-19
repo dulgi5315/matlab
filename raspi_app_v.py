@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
         """)
         top_layout.addWidget(menu_btn)
         
-        # 상단 사각형 3개
+               # 상단 사각형 3개
         temperatures = ['36.5', '37.0', '37.5']
         for temp in temperatures:
             box = QFrame()
@@ -61,24 +61,25 @@ class MainWindow(QMainWindow):
             
             # 온도 라벨 추가
             layout = QVBoxLayout(box)
-            label = QLabel(temp)
-            label.setAlignment(Qt.AlignCenter)
+            label = QLabel()
             
-            # 라벨 회전 설정
-            label.setStyleSheet("""
-                QLabel {
-                    font-size: 40px;
-                    font-weight: bold;
-                    color: #333;
-                }
-            """)
+            # 회전된 텍스트를 그리기 위한 설정
+            font = QFont()
+            font.setPointSize(20)
+            font.setBold(True)
+            label.setFont(font)
             
-            # Transform을 사용한 회전
-            transform = QTransform().rotate(90)
-            label.setTransform(transform)
+            # QLabel에 회전된 텍스트를 그리는 이벤트 핸들러 추가
+            def paintEvent(event, text=temp):
+                painter = QPainter(label)
+                painter.setFont(font)
+                painter.translate(label.width()/2, label.height()/2)
+                painter.rotate(90)
+                painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, text)
+                painter.end()
             
+            label.paintEvent = paintEvent
             layout.addWidget(label)
-            
             top_layout.addWidget(box)
         
         # 종료 버튼
