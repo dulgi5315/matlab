@@ -325,6 +325,7 @@ class TemperatureSettingWindow(QWidget):
         self.scroll.setValue(int(self.saved_temperature * 2))
         self.scroll.setFixedHeight(350)  # 스크롤바 길이 증가
         self.scroll.setFixedWidth(60)   # 스크롤바 너비
+        self.scroll.setInvertedAppearance(True)
         self.scroll.setStyleSheet("""
             QScrollBar:vertical {
                 border: 2px solid #ddd;
