@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):
         
         # 메뉴 버튼
         menu_btn = QPushButton('≡')
-        menu_btn.setFixedSize(50, 50)  # 크기 축소
+        menu_btn.setFixedSize(50, 100)  # 크기 축소
         menu_btn.setStyleSheet("""
             QPushButton {
                 font-size: 24px;
