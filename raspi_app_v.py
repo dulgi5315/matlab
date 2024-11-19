@@ -229,6 +229,11 @@ class ModeSettingWindow(QWidget):
         self.installEventFilter(self)
         self.initUI()
     
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.WindowDeactivate:
+            self.close()
+        return super().eventFilter(obj, event)
+
     def initUI(self):
         self.setFixedSize(500, 400)  # 4개의 버튼이 들어갈 수 있도록 너비 증가
         
@@ -262,10 +267,18 @@ class ModeSettingWindow(QWidget):
         
         self.setLayout(layout)
     
-    def eventFilter(self, obj, event):
-        if event.type() == QEvent.WindowDeactivate:
-            self.close()
-        return super().eventFilter(obj, event)
+    def show_temperature_setting(self):
+        self.close()  # 모드 설정 창 닫기
+        self.temp_window = TemperatureSettingWindow()
+        
+        # 화면 중앙에 위치 설정
+        screen = QApplication.primaryScreen().geometry()
+        window_size = self.temp_window.geometry()
+        center_x = (screen.width() - window_size.width()) // 2
+        center_y = int(screen.height() * 0.4 - window_size.height() // 2)
+        
+        self.temp_window.move(center_x, center_y)
+        self.temp_window.show()
 
 #정온 설정 창
 class TemperatureSettingWindow(QWidget):
