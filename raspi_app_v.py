@@ -304,10 +304,13 @@ class TemperatureSettingWindow(QWidget):
                 super().__init__()
                 self.temp = temp
                 self.setFixedSize(100, 350)  # 크기 조정
+                self.font = QFont()
+                self.font.setPointSize(20)
+                self.font.setBold(True)
                 
             def paintEvent(self, event):
                 painter = QPainter(self)
-                painter.setFont(QFont('', 24))  # 폰트 크기 증가
+                painter.setFont(self.font)
                 painter.translate(self.width()/2, self.height()/2)
                 painter.rotate(-90)
                 painter.drawText(QRect(-100, -50, 200, 100), Qt.AlignCenter, f'{self.temp:.1f}°C')
