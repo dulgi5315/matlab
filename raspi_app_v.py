@@ -282,7 +282,6 @@ class ModeSettingWindow(QWidget):
 
 #정온 설정 창
 class TemperatureSettingWindow(QWidget):
-    # 클래스 변수로 저장된 온도 추가
     saved_temperature = 25.0
     
     def __init__(self):
@@ -293,31 +292,36 @@ class TemperatureSettingWindow(QWidget):
         self.initUI()
     
     def initUI(self):
-        self.setFixedSize(300, 400)
+        self.setFixedSize(400, 400)  # 창 너비 증가
         
-        layout = QVBoxLayout()
+        # 메인 레이아웃을 수평으로 변경
+        layout = QHBoxLayout()
+        layout.setSpacing(20)
         
-        # 온도 표시 레이블
-        self.temp_label = QLabel(f'{self.saved_temperature:.1f}°C')
-        self.temp_label.setAlignment(Qt.AlignCenter)
-        self.temp_label.setStyleSheet("""
-            QLabel {
-                font-size: 40px;
-                font-weight: bold;
-                color: #333;
-                background-color: white;
-                border: 2px solid #ddd;
-                border-radius: 10px;
-                padding: 20px;
-                margin: 20px;
-            }
-        """)
+        # 온도 표시 레이블을 회전된 버튼으로 변경
+        class RotatedTempLabel(QWidget):
+            def __init__(self, temp):
+                super().__init__()
+                self.temp = temp
+                self.setFixedSize(100, 350)  # 크기 조정
+                
+            def paintEvent(self, event):
+                painter = QPainter(self)
+                painter.setFont(QFont('', 24))  # 폰트 크기 증가
+                painter.translate(self.width()/2, self.height()/2)
+                painter.rotate(-90)
+                painter.drawText(QRect(-100, -50, 200, 100), Qt.AlignCenter, f'{self.temp:.1f}°C')
+        
+        self.temp_display = RotatedTempLabel(self.saved_temperature)
+        layout.addWidget(self.temp_display)
         
         # 스크롤바
         self.scroll = QScrollBar(Qt.Vertical)
         self.scroll.setMinimum(50)  # 25.0도
         self.scroll.setMaximum(80)  # 40.0도
-        self.scroll.setValue(int(self.saved_temperature * 2))  # 저장된 온도로 초기값 설정
+        self.scroll.setValue(int(self.saved_temperature * 2))
+        self.scroll.setFixedHeight(350)  # 스크롤바 길이 증가
+        self.scroll.setFixedWidth(60)   # 스크롤바 너비
         self.scroll.setStyleSheet("""
             QScrollBar:vertical {
                 border: 2px solid #ddd;
@@ -339,38 +343,34 @@ class TemperatureSettingWindow(QWidget):
             }
         """)
         self.scroll.valueChanged.connect(self.update_temperature)
+        layout.addWidget(self.scroll)
         
-        # 확인 버튼
-        confirm_btn = QPushButton('확인')
+        # 확인 버튼을 회전된 버튼으로 변경
+        confirm_btn = RotatedButton('확인')
+        confirm_btn.setFixedSize(100, 350)  # 크기 조정
         confirm_btn.setStyleSheet("""
             QPushButton {
                 background-color: #4CAF50;
                 color: white;
                 border: none;
                 border-radius: 10px;
-                padding: 10px;
                 font-size: 16px;
-                margin: 20px;
             }
             QPushButton:hover {
                 background-color: #45a049;
             }
         """)
         confirm_btn.clicked.connect(self.save_and_close)
-        
-        layout.addWidget(self.temp_label)
-        layout.addWidget(self.scroll, 1)  # 스크롤바에 stretch factor 1 추가
         layout.addWidget(confirm_btn)
         
         self.setLayout(layout)
     
     def update_temperature(self):
-        # 스크롤바 값을 온도로 변환 (50~80 → 25.0~40.0)
         temp = self.scroll.value() / 2
-        self.temp_label.setText(f'{temp:.1f}°C')
+        self.temp_display.temp = temp
+        self.temp_display.update()  # 화면 갱신
     
     def save_and_close(self):
-        # 현재 온도를 클래스 변수에 저장
         TemperatureSettingWindow.saved_temperature = self.scroll.value() / 2
         self.close()
     
@@ -381,7 +381,7 @@ class TemperatureSettingWindow(QWidget):
 
 
 
-
+# 버튼 세로방향 회전
 class RotatedButton(QPushButton):
     def __init__(self, text):
         super().__init__()
