@@ -335,12 +335,12 @@ class TemperatureSettingWindow(QWidget):
                 margin: 0px 0px 0px 0px;
             }
             QScrollBar::handle:vertical {
-                background: #f0f0f0;
+                background: #888888;
                 border-radius: 3px;
                 min-height: 20px;
             }
             QScrollBar::handle:vertical:hover {
-                background: #e0e0e0;
+                background: #777777;
             }
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
                 height: 0px;
