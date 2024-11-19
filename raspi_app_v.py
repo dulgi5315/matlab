@@ -105,25 +105,49 @@ class MainWindow(QMainWindow):
         # 중간 여백
         main_layout.addStretch()
         
-		# 하단 영역
-        bottom_widget = QWidget()
-        bottom_layout = QHBoxLayout(bottom_widget)
-        bottom_layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
+		# # 하단 영역
+        # bottom_widget = QWidget()
+        # bottom_layout = QHBoxLayout(bottom_widget)
+        # bottom_layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
         
-        # 하단 긴 사각형
-        bottom_box = QFrame()
-        bottom_box.setFrameStyle(QFrame.Box | QFrame.Plain)
-        bottom_box.setStyleSheet("""
-            QFrame {
-                border: 2px solid #ddd;
+        # # 하단 긴 사각형
+        # bottom_box = QFrame()
+        # bottom_box.setFrameStyle(QFrame.Box | QFrame.Plain)
+        # bottom_box.setStyleSheet("""
+        #     QFrame {
+        #         border: 2px solid #ddd;
+        #         background-color: white;
+        #         border-radius: 8px;
+        #     }
+        # """)
+        # bottom_box.setFixedSize(590, 280)  # 너비를 540으로, 높이를 200으로 수정
+        # bottom_layout.addWidget(bottom_box)
+        
+        # main_layout.addWidget(bottom_widget)
+        
+        # 하단 사각형 부분
+        bottom_rect = QWidget()
+        bottom_rect.setStyleSheet("""
+            QWidget {
                 background-color: white;
-                border-radius: 8px;
+                border: 2px solid #ddd;
+                border-radius: 10px;
             }
         """)
-        bottom_box.setFixedSize(590, 280)  # 너비를 540으로, 높이를 200으로 수정
-        bottom_layout.addWidget(bottom_box)
         
-        main_layout.addWidget(bottom_widget)
+        # 하단 여백 설정을 위해 QVBoxLayout 사용
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(top_widget)
+        main_layout.addWidget(bottom_rect)
+        main_layout.addSpacing(20)  # 하단 여백 20픽셀 추가
+        
+        # 레이아웃의 마진 설정
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        
+        # 중앙 위젯 설정
+        central_widget = QWidget()
+        central_widget.setLayout(main_layout)
+        self.setCentralWidget(central_widget)
         
     def show_menu(self):
         self.menu_window = MenuWindow()
@@ -203,8 +227,8 @@ class MenuWindow(QWidget):
         # 화면 중앙에 위치 설정
         screen = QApplication.primaryScreen().geometry()
         window_size = self.mode_window.geometry()
-        center_x = (screen.width() - window_size.width()) // 2
-        center_y = int(screen.height() * 0.4 - window_size.height() // 2)
+        center_x = (screen.width() - menu_size.width()) // 2
+        center_y = (screen.height() - menu_size.height()) // 2
         
         self.mode_window.move(center_x, center_y)
         self.mode_window.show()
