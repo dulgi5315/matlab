@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
                 border-radius: 8px;
             }
         """)
-        bottom_box.setFixedSize(580, 290)  # 너비를 540으로, 높이를 200으로 수정
+        bottom_box.setFixedSize(590, 280)  # 너비를 540으로, 높이를 200으로 수정
         bottom_layout.addWidget(bottom_box)
         
         main_layout.addWidget(bottom_widget)
