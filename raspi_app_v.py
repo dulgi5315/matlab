@@ -98,30 +98,6 @@ class MainWindow(QMainWindow):
         bottom_layout.addWidget(bottom_box)
         
         main_layout.addWidget(bottom_widget)
-        
-        # 종료 버튼
-        exit_btn = QPushButton('×')  # 종료 아이콘
-        exit_btn.setFixedSize(60, 60)
-        exit_btn.clicked.connect(self.close)
-        exit_btn.setStyleSheet("""
-            QPushButton {
-                font-size: 24px;
-                background-color: #ff6b6b;
-                color: white;
-                border: none;
-                border-radius: 10px;
-            }
-            QPushButton:hover {
-                background-color: #ff5252;
-            }
-        """)
-        
-        # 종료 버튼을 우측 하단에 배치
-        exit_btn_container = QWidget()
-        exit_layout = QHBoxLayout(exit_btn_container)
-        exit_layout.addStretch()
-        exit_layout.addWidget(exit_btn)
-        main_layout.addWidget(exit_btn_container)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
