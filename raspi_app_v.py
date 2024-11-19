@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
             }
         """)
         bottom_layout.addWidget(bottom_rect)
-        bottom_layout.addSpacing(40)
+        bottom_layout.addSpacing(35)
         
         # 메인 레이아웃에 추가
         main_layout = QVBoxLayout()
