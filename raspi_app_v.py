@@ -35,6 +35,7 @@ class MainWindow(QMainWindow):
         # 메뉴 버튼
         menu_btn = QPushButton('≡')
         menu_btn.setFixedSize(50, 50)  # 크기 축소
+        menu_btn.clicked.connect(self.show_menu)
         menu_btn.setStyleSheet("""
             QPushButton {
                 font-size: 24px;
@@ -144,6 +145,59 @@ class MainWindow(QMainWindow):
         bottom_layout.addWidget(bottom_box)
         
         main_layout.addWidget(bottom_widget)
+        
+    def show_menu(self):
+        self.menu_window = MenuWindow()
+        self.menu_window.show()
+
+class MenuWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        
+    def initUI(self):
+        # 창 설정
+        self.setWindowTitle('메뉴')
+        self.setFixedSize(300, 150)
+        
+        # 메인 레이아웃
+        layout = QHBoxLayout()
+        
+        # 왼쪽 버튼
+        left_btn = QPushButton('왼쪽')
+        left_btn.setFixedSize(120, 120)
+        left_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #f0f0f0;
+                border: 2px solid #ddd;
+                border-radius: 10px;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+        """)
+        
+        # 오른쪽 버튼
+        right_btn = QPushButton('오른쪽')
+        right_btn.setFixedSize(120, 120)
+        right_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #f0f0f0;
+                border: 2px solid #ddd;
+                border-radius: 10px;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+        """)
+        
+        # 버튼들을 레이아웃에 추가
+        layout.addWidget(left_btn)
+        layout.addWidget(right_btn)
+        
+        self.setLayout(layout)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
