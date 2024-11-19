@@ -33,15 +33,6 @@ class MainWindow(QMainWindow):
         top_layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
         
         # 메뉴 버튼 생성 부분
-        class RotatedMenuButton(QPushButton):
-            def paintEvent(self, event):
-                super().paintEvent(event)
-                painter = QPainter(self)
-                painter.setFont(QFont('', 24))
-                painter.translate(self.width()/2, self.height()/2)
-                painter.rotate(-90)
-                painter.drawText(QRect(-15, -15, 30, 30), Qt.AlignCenter, '≡')
-
         menu_btn = RotatedButton('≡')
         menu_btn.setFixedSize(50, 50)
         menu_btn.setStyleSheet("""
@@ -51,7 +42,7 @@ class MainWindow(QMainWindow):
                 border-radius: 8px;
             }
         """)
-        # 여기에 클릭 이벤트 연결 추가
+        # 여기에 클릭 이`벤트 연결 추가
         menu_btn.clicked.connect(self.show_menu)
         top_layout.addWidget(menu_btn)
         
@@ -136,13 +127,17 @@ class MainWindow(QMainWindow):
         
     def show_menu(self):
         self.menu_window = MenuWindow()
-            
+        
+        # 화면의 중앙 위치 계산
         screen = QApplication.primaryScreen().geometry()
         menu_size = self.menu_window.geometry()
-            
+        
+        # 화면 중앙에 위치하도록 x, y 좌표 계산
+        # y 좌표를 화면 높이의 40% 위치로 조정
         center_x = (screen.width() - menu_size.width()) // 2
-        center_y = (screen.height() - menu_size.height()) // 2
-            
+        center_y = int(screen.height() * 0.4 - menu_size.height() // 2)
+        
+        # 메뉴 창 위치 설정
         self.menu_window.move(center_x, center_y)
         self.menu_window.show()
 
