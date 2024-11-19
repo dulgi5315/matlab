@@ -65,10 +65,6 @@ class MainWindow(QMainWindow):
             label.setAlignment(Qt.AlignCenter)
             
             # 라벨 회전 설정
-            rotation = QGraphicsRotation()
-            rotation.setAngle(90)
-            label.setGraphicsEffect(rotation)
-            
             label.setStyleSheet("""
                 QLabel {
                     font-size: 40px;
@@ -76,6 +72,11 @@ class MainWindow(QMainWindow):
                     color: #333;
                 }
             """)
+            
+            # Transform을 사용한 회전
+            transform = QTransform().rotate(90)
+            label.setTransform(transform)
+            
             layout.addWidget(label)
             
             top_layout.addWidget(box)
