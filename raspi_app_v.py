@@ -43,6 +43,27 @@ class MainWindow(QMainWindow):
                 border-radius: 8px;
             }
         """)
+        
+		# 회전된 메뉴 텍스트를 그리기 위한 paintEvent 오버라이드
+        class RotatedMenuButton(QPushButton):
+            def paintEvent(self, event):
+                super().paintEvent(event)
+                painter = QPainter(self)
+                painter.setFont(QFont('', 24))
+                painter.translate(self.width()/2, self.height()/2)
+                painter.rotate(-90)
+                painter.drawText(QRect(-15, -15, 30, 30), Qt.AlignCenter, '≡')
+
+        # 기존 버튼을 회전된 버튼으로 교체
+        menu_btn = RotatedMenuButton()
+        menu_btn.setFixedSize(50, 50)
+        menu_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #f0f0f0;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+            }
+        """)
         top_layout.addWidget(menu_btn)
         
         # 회전된 텍스트를 표시할 커스텀 위젯
