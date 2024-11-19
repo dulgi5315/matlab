@@ -158,16 +158,14 @@ class MenuWindow(QWidget):
         return super().eventFilter(obj, event)
 
     def initUI(self):
-        # 창 크기 설정
         self.setFixedSize(300, 150)
         
-        # 메인 레이아웃
         layout = QHBoxLayout()
         
-        # 왼쪽 버튼
-        left_btn = QPushButton('왼쪽')
-        left_btn.setFixedSize(120, 120)
-        left_btn.setStyleSheet("""
+        # 예약 버튼
+        reserve_btn = RotatedButton('예약')
+        reserve_btn.setFixedSize(120, 120)
+        reserve_btn.setStyleSheet("""
             QPushButton {
                 background-color: #f0f0f0;
                 border: 2px solid #ddd;
@@ -179,10 +177,10 @@ class MenuWindow(QWidget):
             }
         """)
         
-        # 오른쪽 버튼
-        right_btn = QPushButton('오른쪽')
-        right_btn.setFixedSize(120, 120)
-        right_btn.setStyleSheet("""
+        # 모드 설정 버튼
+        mode_btn = RotatedButton('모드 설정')
+        mode_btn.setFixedSize(120, 120)
+        mode_btn.setStyleSheet("""
             QPushButton {
                 background-color: #f0f0f0;
                 border: 2px solid #ddd;
@@ -194,11 +192,23 @@ class MenuWindow(QWidget):
             }
         """)
         
-        # 버튼들을 레이아웃에 추가
-        layout.addWidget(left_btn)
-        layout.addWidget(right_btn)
+        layout.addWidget(reserve_btn)
+        layout.addWidget(mode_btn)
         
         self.setLayout(layout)
+
+class RotatedButton(QPushButton):
+    def __init__(self, text):
+        super().__init__()
+        self.btn_text = text
+        
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        painter = QPainter(self)
+        painter.setFont(QFont('', 24))
+        painter.translate(self.width()/2, self.height()/2)
+        painter.rotate(-90)
+        painter.drawText(QRect(-15, -15, 30, 30), Qt.AlignCenter, self.btn_text)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
