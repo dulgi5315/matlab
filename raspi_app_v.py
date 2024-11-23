@@ -279,6 +279,8 @@ class ModeSettingWindow(QWidget):
                 btn.clicked.connect(self.show_temperature_setting)
             elif text == "단계 설정":
                 btn.clicked.connect(self.show_step_setting)
+            elif text == "사용자 설정":
+                btn.clicked.connect(self.show_user_setting)
             layout.addWidget(btn)
         
         self.setLayout(layout)
@@ -308,6 +310,19 @@ class ModeSettingWindow(QWidget):
         
         self.step_window.move(center_x, center_y)
         self.step_window.show()
+
+    def show_user_setting(self):
+        self.close()
+        self.user_window = UserSettingWindow()
+        
+        # 화면 중앙에 위치 설정
+        screen = QApplication.primaryScreen().geometry()
+        window_size = self.user_window.geometry()
+        center_x = (screen.width() - window_size.width()) // 2
+        center_y = int(screen.height() * 0.4 - window_size.height() // 2)
+        
+        self.user_window.move(center_x, center_y)
+        self.user_window.show()
 
 #정온 설정 창
 class TemperatureSettingWindow(QWidget):
@@ -506,6 +521,122 @@ class StepSettingWindow(QWidget):
     
     def save_and_close(self):
         StepSettingWindow.saved_step = self.scroll.value()
+        self.close()
+    
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.WindowDeactivate:
+            self.close()
+        return super().eventFilter(obj, event)
+
+class UserSettingWindow(QWidget):
+    # 3개의 온도 저장값 초기화
+    saved_temps = [25.0, 25.0, 25.0]
+    
+    def __init__(self):
+        super().__init__()
+        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_ShowWithoutActivating)
+        self.installEventFilter(self)
+        self.initUI()
+    
+    def initUI(self):
+        self.setFixedSize(600, 400)  # 3개의 스크롤을 위해 너비 증가
+        
+        layout = QHBoxLayout()
+        layout.setSpacing(20)
+        
+        # 3개의 온도 조절 섹션 생성
+        self.temp_displays = []
+        self.scrolls = []
+        
+        for i in range(3):
+            # 온도 표시 레이블
+            class RotatedTempLabel(QWidget):
+                def __init__(self, temp):
+                    super().__init__()
+                    self.temp = temp
+                    self.setFixedSize(100, 350)
+                    self.font = QFont()
+                    self.font.setPointSize(20)
+                    self.font.setBold(True)
+                    
+                def paintEvent(self, event):
+                    painter = QPainter(self)
+                    painter.setFont(self.font)
+                    painter.translate(self.width()/2, self.height()/2)
+                    painter.rotate(-90)
+                    painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, f'{self.temp:.1f}')
+            
+            temp_display = RotatedTempLabel(self.saved_temps[i])
+            self.temp_displays.append(temp_display)
+            layout.addWidget(temp_display)
+            
+            # 스크롤바
+            scroll = QScrollBar(Qt.Vertical)
+            scroll.setMinimum(50)  # 25.0도
+            scroll.setMaximum(80)  # 40.0도
+            scroll.setValue(int(self.saved_temps[i] * 2))
+            scroll.setFixedHeight(350)
+            scroll.setFixedWidth(60)
+            scroll.setInvertedAppearance(True)
+            scroll.setStyleSheet("""
+                QScrollBar:vertical {
+                    border: 2px solid #ddd;
+                    border-radius: 5px;
+                    background: white;
+                    width: 60px;
+                    margin: 0px 0px 0px 0px;
+                }
+                QScrollBar::handle:vertical {
+                    background: #888888;
+                    border-radius: 3px;
+                    min-height: 30px;
+                    max-height: 30px;
+                    margin: 0px 4px;
+                }
+                QScrollBar::handle:vertical:hover {
+                    background: #777777;
+                }
+                QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+                    height: 0px;
+                }
+                QScrollBar::sub-page:vertical, QScrollBar::add-page:vertical {
+                    background: white;
+                }
+            """)
+            scroll.valueChanged.connect(lambda value, index=i: self.update_temperature(value, index))
+            self.scrolls.append(scroll)
+            layout.addWidget(scroll)
+        
+        # 확인 버튼
+        confirm_btn = RotatedButton('확인')
+        confirm_btn.setFixedSize(100, 350)
+        confirm_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+        """)
+        confirm_btn.clicked.connect(self.save_and_close)
+        layout.addWidget(confirm_btn)
+        
+        self.setLayout(layout)
+    
+    def update_temperature(self, value, index):
+        temp = value / 2
+        self.temp_displays[index].temp = temp
+        self.temp_displays[index].update()
+    
+    def save_and_close(self):
+        # 모든 온도값 저장
+        for i, scroll in enumerate(self.scrolls):
+            UserSettingWindow.saved_temps[i] = scroll.value() / 2
         self.close()
     
     def eventFilter(self, obj, event):
