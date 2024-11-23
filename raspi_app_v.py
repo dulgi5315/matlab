@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import sys
+from datetime import datetime
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -216,7 +217,7 @@ class MenuWindow(QWidget):
             }
         """)
         mode_btn.clicked.connect(self.show_mode_setting)
-        
+        reserve_btn.clicked.connect(self.show_reservation)
         layout.addWidget(reserve_btn)
         layout.addWidget(mode_btn)
         
@@ -234,6 +235,19 @@ class MenuWindow(QWidget):
         
         self.mode_window.move(center_x, center_y)
         self.mode_window.show()
+
+    def show_reservation(self):
+        self.close()
+        self.reserve_window = ReservationWindow()
+        
+        # 화면 중앙에 위치 설정
+        screen = QApplication.primaryScreen().geometry()
+        window_size = self.reserve_window.geometry()
+        center_x = (screen.width() - window_size.width()) // 2
+        center_y = int(screen.height() * 0.4 - window_size.height() // 2)
+        
+        self.reserve_window.move(center_x, center_y)
+        self.reserve_window.show()
 
 class ModeSettingWindow(QWidget):
     def __init__(self):
@@ -651,6 +665,129 @@ class UserSettingWindow(QWidget):
         if event.type() == QEvent.WindowDeactivate:
             self.close()
         return super().eventFilter(obj, event)
+
+class ReservationWindow(QWidget):
+    saved_hour = datetime.now().hour
+    saved_minute = datetime.now().minute
+    
+    def __init__(self):
+        super().__init__()
+        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_ShowWithoutActivating)
+        self.installEventFilter(self)
+        self.initUI()
+    
+    def initUI(self):
+        self.setFixedSize(400, 400)
+        
+        layout = QHBoxLayout()
+        layout.setSpacing(10)
+        
+        # 시간 표시 레이블
+        class RotatedTimeLabel(QWidget):
+            def __init__(self, hour, minute):
+                super().__init__()
+                self.hour = hour
+                self.minute = minute
+                self.setFixedSize(100, 350)
+                self.font = QFont()
+                self.font.setPointSize(20)
+                self.font.setBold(True)
+            
+            def paintEvent(self, event):
+                painter = QPainter(self)
+                painter.setFont(self.font)
+                painter.translate(self.width()/2, self.height()/2)
+                painter.rotate(-90)
+                painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, f'{self.hour:02d}:{self.minute:02d}')
+        
+        self.time_display = RotatedTimeLabel(self.saved_hour, self.saved_minute)
+        layout.addWidget(self.time_display)
+        
+        # 시간 스크롤바
+        self.hour_scroll = QScrollBar(Qt.Vertical)
+        self.hour_scroll.setMinimum(0)
+        self.hour_scroll.setMaximum(23)
+        self.hour_scroll.setValue(self.saved_hour)
+        self.hour_scroll.setFixedHeight(350)
+        self.hour_scroll.setFixedWidth(60)
+        self.hour_scroll.setInvertedAppearance(True)
+        self.hour_scroll.setStyleSheet("""
+            QScrollBar:vertical {
+                border: 2px solid #ddd;
+                border-radius: 5px;
+                background: white;
+                width: 60px;
+                margin: 0px 0px 0px 0px;
+            }
+            QScrollBar::handle:vertical {
+                background: #888888;
+                border-radius: 3px;
+                min-height: 30px;
+                max-height: 30px;
+                margin: 0px 4px;
+            }
+            QScrollBar::handle:vertical:hover {
+                background: #777777;
+            }
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+                height: 0px;
+            }
+            QScrollBar::sub-page:vertical, QScrollBar::add-page:vertical {
+                background: white;
+            }
+        """)
+        self.hour_scroll.valueChanged.connect(self.update_time)
+        layout.addWidget(self.hour_scroll)
+        
+        # 분 스크롤바
+        self.minute_scroll = QScrollBar(Qt.Vertical)
+        self.minute_scroll.setMinimum(0)
+        self.minute_scroll.setMaximum(59)
+        self.minute_scroll.setValue(self.saved_minute)
+        self.minute_scroll.setFixedHeight(350)
+        self.minute_scroll.setFixedWidth(60)
+        self.minute_scroll.setInvertedAppearance(True)
+        self.minute_scroll.setStyleSheet(self.hour_scroll.styleSheet())
+        self.minute_scroll.valueChanged.connect(self.update_time)
+        layout.addWidget(self.minute_scroll)
+        
+        # 확인 버튼
+        confirm_btn = RotatedButton('확인')
+        confirm_btn.setFixedSize(100, 350)
+        confirm_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+        """)
+        confirm_btn.clicked.connect(self.save_and_close)
+        layout.addWidget(confirm_btn)
+        
+        self.setLayout(layout)
+    
+    def update_time(self):
+        self.time_display.hour = self.hour_scroll.value()
+        self.time_display.minute = self.minute_scroll.value()
+        self.time_display.update()
+    
+    def save_and_close(self):
+        ReservationWindow.saved_hour = self.hour_scroll.value()
+        ReservationWindow.saved_minute = self.minute_scroll.value()
+        self.close()
+    
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.WindowDeactivate:
+            self.close()
+        return super().eventFilter(obj, event)
+
+
 
 # 버튼 세로방향 회전
 class RotatedButton(QPushButton):
