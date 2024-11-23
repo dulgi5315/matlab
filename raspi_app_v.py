@@ -7,6 +7,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
+        # 윈도우가 표시된 후 모드 설정창 열기
+        QTimer.singleShot(100, self.show_mode_window)
         
     def initUI(self):
         self.setWindowTitle('전기매트 컨트롤러')
@@ -151,6 +153,18 @@ class MainWindow(QMainWindow):
         # 메뉴 창 위치 설정
         self.menu_window.move(center_x, center_y)
         self.menu_window.show()
+
+    def show_mode_window(self):
+        self.mode_window = ModeSettingWindow()
+        
+        # 화면 중앙에 위치 설정
+        screen = QApplication.primaryScreen().geometry()
+        window_size = self.mode_window.geometry()
+        center_x = (screen.width() - window_size.width()) // 2
+        center_y = int(screen.height() * 0.4 - window_size.height() // 2)
+        
+        self.mode_window.move(center_x, center_y)
+        self.mode_window.show()
 
 class MenuWindow(QWidget):
     def __init__(self, parent=None):
