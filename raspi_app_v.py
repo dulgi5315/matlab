@@ -630,10 +630,17 @@ class UserSettingWindow(QWidget):
             # 섹션 레이아웃을 메인 레이아웃에 추가
             layout.addLayout(section_layout)
         
-        # 확인 버튼
-        confirm_btn = RotatedButton('확인')
-        confirm_btn.setFixedSize(100, 350)
-        confirm_btn.setStyleSheet("""
+        # 버튼들을 위한 컨테이너 위젯과 레이아웃
+        button_container = QWidget()
+        button_container.setFixedSize(100, 350)
+        button_layout = QVBoxLayout(button_container)
+        button_layout.setSpacing(5)
+        button_layout.setContentsMargins(0, 0, 0, 0)
+        
+        # 저장 버튼
+        save_btn = RotatedButton('저장')
+        save_btn.setFixedSize(100, 110)  # 높이를 1/3로 설정
+        save_btn.setStyleSheet("""
             QPushButton {
                 background-color: #4CAF50;
                 color: white;
@@ -645,11 +652,78 @@ class UserSettingWindow(QWidget):
                 background-color: #45a049;
             }
         """)
+        save_btn.clicked.connect(self.save_temps)
+        
+        # 불러오기 버튼
+        load_btn = RotatedButton('불러오기')
+        load_btn.setFixedSize(100, 110)  # 높이를 1/3로 설정
+        load_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #1976D2;
+            }
+        """)
+        load_btn.clicked.connect(self.load_temps)
+        
+        # 확인 버튼
+        confirm_btn = RotatedButton('확인')
+        confirm_btn.setFixedSize(100, 110)  # 높이를 1/3로 설정
+        confirm_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #FF9800;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #F57C00;
+            }
+        """)
         confirm_btn.clicked.connect(self.save_and_close)
-        layout.addWidget(confirm_btn)
+        
+        # 버튼들을 레이아웃에 추가
+        button_layout.addWidget(save_btn)
+        button_layout.addWidget(load_btn)
+        button_layout.addWidget(confirm_btn)
+        
+        # 버튼 컨테이너를 메인 레이아웃에 추가
+        layout.addWidget(button_container)
         
         self.setLayout(layout)
     
+    def save_temps(self):
+        # 현재 설정된 온도를 파일에 저장
+        temps = [scroll.value() / 2 for scroll in self.scrolls]
+        with open('saved_temps.txt', 'w') as f:
+            f.write(','.join(map(str, temps)))
+    
+    def load_temps(self):
+        try:
+            # 파일에서 저장된 온도를 불러오기
+            with open('saved_temps.txt', 'r') as f:
+                temps = list(map(float, f.read().split(',')))
+                
+            # 스크롤바와 디스플레이 업데이트
+            for i, temp in enumerate(temps):
+                self.scrolls[i].setValue(int(temp * 2))
+                self.temp_displays[i].temp = temp
+                self.temp_displays[i].update()
+        except FileNotFoundError:
+            pass  # 저장된 파일이 없는 경우 무시
+    
+    def save_and_close(self):
+        # 현재 설정을 저장하고 창 닫기
+        for i, scroll in enumerate(self.scrolls):
+            UserSettingWindow.saved_temps[i] = scroll.value() / 2
+        self.close()
+
     def update_temperature(self, value, index):
         temp = value / 2
         self.temp_displays[index].temp = temp
