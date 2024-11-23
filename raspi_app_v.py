@@ -549,12 +549,12 @@ class UserSettingWindow(QWidget):
                 self.font.setPointSize(20)
                 self.font.setBold(True)
             
-        def paintEvent(self, event):
-            painter = QPainter(self)
-            painter.setFont(self.font)
-            painter.translate(self.width()/2, self.height()/2)
-            painter.rotate(-90)
-            painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, f'{self.temp:.1f}')
+            def paintEvent(self, event):
+                painter = QPainter(self)
+                painter.setFont(self.font)
+                painter.translate(self.width()/2, self.height()/2)
+                painter.rotate(-90)
+                painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, f'{self.temp:.1f}')
 
         self.setFixedSize(600, 400)
         
