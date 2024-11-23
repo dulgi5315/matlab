@@ -529,52 +529,31 @@ class StepSettingWindow(QWidget):
         return super().eventFilter(obj, event)
 
 class UserSettingWindow(QWidget):
-    # 3개의 온도 저장값 초기화
-    saved_temps = [25.0, 25.0, 25.0]
-    
-    def __init__(self):
-        super().__init__()
-        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_ShowWithoutActivating)
-        self.installEventFilter(self)
-        self.initUI()
-    
     def initUI(self):
-        self.setFixedSize(600, 400)  # 3개의 스크롤을 위해 너비 증가
+        self.setFixedSize(600, 400)
         
         layout = QHBoxLayout()
-        layout.setSpacing(20)
+        layout.setSpacing(10)  # 간격을 20에서 10으로 줄임
+        layout.setContentsMargins(10, 10, 10, 10)  # 전체 여백도 조정
         
         # 3개의 온도 조절 섹션 생성
         self.temp_displays = []
         self.scrolls = []
         
         for i in range(3):
-            # 온도 표시 레이블
-            class RotatedTempLabel(QWidget):
-                def __init__(self, temp):
-                    super().__init__()
-                    self.temp = temp
-                    self.setFixedSize(100, 350)
-                    self.font = QFont()
-                    self.font.setPointSize(20)
-                    self.font.setBold(True)
-                    
-                def paintEvent(self, event):
-                    painter = QPainter(self)
-                    painter.setFont(self.font)
-                    painter.translate(self.width()/2, self.height()/2)
-                    painter.rotate(-90)
-                    painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, f'{self.temp:.1f}')
+            # 각 온도 조절 섹션을 위한 수평 레이아웃
+            section_layout = QHBoxLayout()
+            section_layout.setSpacing(5)  # 온도 표시와 스크롤바 사이 간격을 5로 설정
             
+            # 온도 표시 레이블
             temp_display = RotatedTempLabel(self.saved_temps[i])
             self.temp_displays.append(temp_display)
-            layout.addWidget(temp_display)
+            section_layout.addWidget(temp_display)
             
             # 스크롤바
             scroll = QScrollBar(Qt.Vertical)
-            scroll.setMinimum(50)  # 25.0도
-            scroll.setMaximum(80)  # 40.0도
+            scroll.setMinimum(50)
+            scroll.setMaximum(80)
             scroll.setValue(int(self.saved_temps[i] * 2))
             scroll.setFixedHeight(350)
             scroll.setFixedWidth(60)
@@ -606,7 +585,10 @@ class UserSettingWindow(QWidget):
             """)
             scroll.valueChanged.connect(lambda value, index=i: self.update_temperature(value, index))
             self.scrolls.append(scroll)
-            layout.addWidget(scroll)
+            section_layout.addWidget(scroll)
+            
+            # 섹션 레이아웃을 메인 레이아웃에 추가
+            layout.addLayout(section_layout)
         
         # 확인 버튼
         confirm_btn = RotatedButton('확인')
