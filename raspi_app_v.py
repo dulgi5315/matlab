@@ -277,6 +277,8 @@ class ModeSettingWindow(QWidget):
             """)
             if text == "정온 설정":
                 btn.clicked.connect(self.show_temperature_setting)
+            elif text == "단계 설정":
+                btn.clicked.connect(self.show_step_setting)
             layout.addWidget(btn)
         
         self.setLayout(layout)
@@ -293,6 +295,19 @@ class ModeSettingWindow(QWidget):
         
         self.temp_window.move(center_x, center_y)
         self.temp_window.show()
+
+    def show_step_setting(self):
+        self.close()
+        self.step_window = StepSettingWindow()
+        
+        # 화면 중앙에 위치 설정
+        screen = QApplication.primaryScreen().geometry()
+        window_size = self.step_window.geometry()
+        center_x = (screen.width() - window_size.width()) // 2
+        center_y = int(screen.height() * 0.4 - window_size.height() // 2)
+        
+        self.step_window.move(center_x, center_y)
+        self.step_window.show()
 
 #정온 설정 창
 class TemperatureSettingWindow(QWidget):
@@ -397,7 +412,106 @@ class TemperatureSettingWindow(QWidget):
             self.close()
         return super().eventFilter(obj, event)
 
-
+# 단계 설정 창 클래스 추가
+class StepSettingWindow(QWidget):
+    saved_step = 1  # 저장된 단계 값
+    
+    def __init__(self):
+        super().__init__()
+        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_ShowWithoutActivating)
+        self.installEventFilter(self)
+        self.initUI()
+    
+    def initUI(self):
+        self.setFixedSize(400, 400)
+        
+        layout = QHBoxLayout()
+        layout.setSpacing(20)
+        
+        # 단계 표시 레이블
+        class RotatedStepLabel(QWidget):
+            def __init__(self, step):
+                super().__init__()
+                self.step = step
+                self.setFixedSize(100, 350)
+                self.font = QFont()
+                self.font.setPointSize(20)
+                self.font.setBold(True)
+                
+            def paintEvent(self, event):
+                painter = QPainter(self)
+                painter.setFont(self.font)
+                painter.translate(self.width()/2, self.height()/2)
+                painter.rotate(-90)
+                painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, f'{self.step}단계')
+        
+        self.step_display = RotatedStepLabel(self.saved_step)
+        layout.addWidget(self.step_display)
+        
+        # 스크롤바
+        self.scroll = QScrollBar(Qt.Vertical)
+        self.scroll.setMinimum(1)  # 1단계
+        self.scroll.setMaximum(8)  # 8단계
+        self.scroll.setValue(self.saved_step)
+        self.scroll.setFixedHeight(350)
+        self.scroll.setFixedWidth(60)
+        self.scroll.setInvertedAppearance(True)
+        self.scroll.setStyleSheet("""
+            QScrollBar:vertical {
+                border: 2px solid #ddd;
+                border-radius: 5px;
+                background: white;
+                width: 60px;
+                margin: 0px 0px 0px 0px;
+            }
+            QScrollBar::handle:vertical {
+                background: #888888;
+                border-radius: 3px;
+                min-height: 20px;
+            }
+            QScrollBar::handle:vertical:hover {
+                background: #777777;
+            }
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+                height: 0px;
+            }
+        """)
+        self.scroll.valueChanged.connect(self.update_step)
+        layout.addWidget(self.scroll)
+        
+        # 확인 버튼
+        confirm_btn = RotatedButton('확인')
+        confirm_btn.setFixedSize(100, 350)
+        confirm_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+        """)
+        confirm_btn.clicked.connect(self.save_and_close)
+        layout.addWidget(confirm_btn)
+        
+        self.setLayout(layout)
+    
+    def update_step(self):
+        self.step_display.step = self.scroll.value()
+        self.step_display.update()
+    
+    def save_and_close(self):
+        StepSettingWindow.saved_step = self.scroll.value()
+        self.close()
+    
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.WindowDeactivate:
+            self.close()
+        return super().eventFilter(obj, event)
 
 # 버튼 세로방향 회전
 class RotatedButton(QPushButton):
