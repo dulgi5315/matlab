@@ -529,6 +529,32 @@ class StepSettingWindow(QWidget):
         return super().eventFilter(obj, event)
 
 class UserSettingWindow(QWidget):
+    saved_temps = [25.0, 25.0, 25.0]
+    
+    def __init__(self):
+        super().__init__()
+        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_ShowWithoutActivating)
+        self.installEventFilter(self)
+        self.initUI()
+    
+    # 온도 표시를 위한 회전된 레이블 클래스
+    class RotatedTempLabel(QWidget):
+        def __init__(self, temp):
+            super().__init__()
+            self.temp = temp
+            self.setFixedSize(100, 350)
+            self.font = QFont()
+            self.font.setPointSize(20)
+            self.font.setBold(True)
+            
+        def paintEvent(self, event):
+            painter = QPainter(self)
+            painter.setFont(self.font)
+            painter.translate(self.width()/2, self.height()/2)
+            painter.rotate(-90)
+            painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, f'{self.temp:.1f}')
+            
     def initUI(self):
         self.setFixedSize(600, 400)
         
