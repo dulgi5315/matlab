@@ -444,23 +444,6 @@ class StepSettingWindow(QWidget):
         layout = QHBoxLayout()
         layout.setSpacing(20)
         
-        # 온도 표시를 위한 회전된 레이블 클래스
-        class RotatedTempLabel(QWidget):
-            def __init__(self, temp):
-                super().__init__()
-                self.temp = temp
-                self.setFixedSize(100, 350)
-                self.font = QFont()
-                self.font.setPointSize(20)
-                self.font.setBold(True)
-            
-        def paintEvent(self, event):
-            painter = QPainter(self)
-            painter.setFont(self.font)
-            painter.translate(self.width()/2, self.height()/2)
-            painter.rotate(-90)
-            painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, f'{self.temp:.1f}')
-
         # 단계 표시 레이블
         class RotatedStepLabel(QWidget):
             def __init__(self, step):
@@ -556,6 +539,23 @@ class UserSettingWindow(QWidget):
         self.initUI()
 
     def initUI(self):
+        # 온도 표시를 위한 회전된 레이블 클래스
+        class RotatedTempLabel(QWidget):
+            def __init__(self, temp):
+                super().__init__()
+                self.temp = temp
+                self.setFixedSize(100, 350)
+                self.font = QFont()
+                self.font.setPointSize(20)
+                self.font.setBold(True)
+            
+        def paintEvent(self, event):
+            painter = QPainter(self)
+            painter.setFont(self.font)
+            painter.translate(self.width()/2, self.height()/2)
+            painter.rotate(-90)
+            painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, f'{self.temp:.1f}')
+
         self.setFixedSize(600, 400)
         
         layout = QHBoxLayout()
