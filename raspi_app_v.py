@@ -667,8 +667,8 @@ class UserSettingWindow(QWidget):
         return super().eventFilter(obj, event)
 
 class ReservationWindow(QWidget):
-    saved_hour = datetime.now().hour
-    saved_minute = datetime.now().minute
+    saved_hour = 0  # 초기값을 0시로 변경
+    saved_minute = 0  # 초기값을 0분으로 변경
     
     def __init__(self):
         super().__init__()
@@ -678,13 +678,35 @@ class ReservationWindow(QWidget):
         self.initUI()
     
     def initUI(self):
-        self.setFixedSize(400, 400)
+        self.setFixedSize(500, 400)  # 너비를 늘려서 현재 시간도 표시
         
         layout = QHBoxLayout()
         layout.setSpacing(10)
         
-        # 시간 표시 레이블
-        class RotatedTimeLabel(QWidget):
+        # 현재 시간 표시 레이블
+        class RotatedCurrentTimeLabel(QWidget):
+            def __init__(self):
+                super().__init__()
+                self.setFixedSize(100, 350)
+                self.font = QFont()
+                self.font.setPointSize(20)
+                self.font.setBold(True)
+                
+                # 1초마다 시간 업데이트
+                self.timer = QTimer()
+                self.timer.timeout.connect(self.update)
+                self.timer.start(1000)
+            
+            def paintEvent(self, event):
+                current_time = datetime.now().strftime("%H:%M")
+                painter = QPainter(self)
+                painter.setFont(self.font)
+                painter.translate(self.width()/2, self.height()/2)
+                painter.rotate(-90)
+                painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, current_time)
+        
+        # 예약 시간 표시 레이블
+        class RotatedSetTimeLabel(QWidget):
             def __init__(self, hour, minute):
                 super().__init__()
                 self.hour = hour
@@ -701,13 +723,18 @@ class ReservationWindow(QWidget):
                 painter.rotate(-90)
                 painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, f'{self.hour:02d}:{self.minute:02d}')
         
-        self.time_display = RotatedTimeLabel(self.saved_hour, self.saved_minute)
+        # 현재 시간 표시
+        self.current_time = RotatedCurrentTimeLabel()
+        layout.addWidget(self.current_time)
+        
+        # 예약 시간 표시
+        self.time_display = RotatedSetTimeLabel(self.saved_hour, self.saved_minute)
         layout.addWidget(self.time_display)
         
         # 시간 스크롤바
         self.hour_scroll = QScrollBar(Qt.Vertical)
         self.hour_scroll.setMinimum(0)
-        self.hour_scroll.setMaximum(23)
+        self.hour_scroll.setMaximum(24)  # 24시간으로 변경
         self.hour_scroll.setValue(self.saved_hour)
         self.hour_scroll.setFixedHeight(350)
         self.hour_scroll.setFixedWidth(60)
