@@ -637,10 +637,10 @@ class UserSettingWindow(QWidget):
         button_layout.setSpacing(5)
         button_layout.setContentsMargins(0, 0, 0, 0)
         
-        # 저장 버튼
-        save_btn = RotatedButton('저장')
-        save_btn.setFixedSize(100, 110)  # 높이를 1/3로 설정
-        save_btn.setStyleSheet("""
+        # 확인 버튼 (상단)
+        confirm_btn = RotatedButton('확인')
+        confirm_btn.setFixedSize(100, 110)
+        confirm_btn.setStyleSheet("""
             QPushButton {
                 background-color: #4CAF50;
                 color: white;
@@ -652,11 +652,11 @@ class UserSettingWindow(QWidget):
                 background-color: #45a049;
             }
         """)
-        save_btn.clicked.connect(self.save_temps)
+        confirm_btn.clicked.connect(self.save_and_close)
         
-        # 불러오기 버튼
+        # 불러오기 버튼 (중간)
         load_btn = RotatedButton('불러오기')
-        load_btn.setFixedSize(100, 110)  # 높이를 1/3로 설정
+        load_btn.setFixedSize(100, 110)
         load_btn.setStyleSheet("""
             QPushButton {
                 background-color: #2196F3;
@@ -669,12 +669,12 @@ class UserSettingWindow(QWidget):
                 background-color: #1976D2;
             }
         """)
-        load_btn.clicked.connect(self.load_temps)
+        load_btn.clicked.connect(self.show_load_window)
         
-        # 확인 버튼
-        confirm_btn = RotatedButton('확인')
-        confirm_btn.setFixedSize(100, 110)  # 높이를 1/3로 설정
-        confirm_btn.setStyleSheet("""
+        # 저장 버튼 (하단)
+        save_btn = RotatedButton('저장')
+        save_btn.setFixedSize(100, 110)
+        save_btn.setStyleSheet("""
             QPushButton {
                 background-color: #FF9800;
                 color: white;
@@ -686,43 +686,45 @@ class UserSettingWindow(QWidget):
                 background-color: #F57C00;
             }
         """)
-        confirm_btn.clicked.connect(self.save_and_close)
+        save_btn.clicked.connect(self.show_save_window)
         
         # 버튼들을 레이아웃에 추가
-        button_layout.addWidget(save_btn)
-        button_layout.addWidget(load_btn)
         button_layout.addWidget(confirm_btn)
+        button_layout.addWidget(load_btn)
+        button_layout.addWidget(save_btn)
         
         # 버튼 컨테이너를 메인 레이아웃에 추가
         layout.addWidget(button_container)
         
         self.setLayout(layout)
-    
-    def save_temps(self):
-        # 현재 설정된 온도를 파일에 저장
+
+    def show_save_window(self):
+        # 현재 설정된 온도값들 가져오기
         temps = [scroll.value() / 2 for scroll in self.scrolls]
-        with open('saved_temps.txt', 'w') as f:
-            f.write(','.join(map(str, temps)))
-    
-    def load_temps(self):
-        try:
-            # 파일에서 저장된 온도를 불러오기
-            with open('saved_temps.txt', 'r') as f:
-                temps = list(map(float, f.read().split(',')))
-                
-            # 스크롤바와 디스플레이 업데이트
-            for i, temp in enumerate(temps):
-                self.scrolls[i].setValue(int(temp * 2))
-                self.temp_displays[i].temp = temp
-                self.temp_displays[i].update()
-        except FileNotFoundError:
-            pass  # 저장된 파일이 없는 경우 무시
-    
-    def save_and_close(self):
-        # 현재 설정을 저장하고 창 닫기
-        for i, scroll in enumerate(self.scrolls):
-            UserSettingWindow.saved_temps[i] = scroll.value() / 2
-        self.close()
+        
+        # 저장 선택 창 표시
+        self.save_window = SaveSelectWindow(temps)
+        
+        # 화면 중앙에 위치 설정
+        screen = QApplication.primaryScreen().geometry()
+        window_size = self.save_window.geometry()
+        center_x = (screen.width() - window_size.width()) // 2
+        center_y = int(screen.height() * 0.4 - window_size.height() // 2)
+        
+        self.save_window.move(center_x, center_y)
+        self.save_window.show()
+
+    def show_load_window(self):
+        self.load_window = SaveSelectWindow(None)  # None을 전달하여 로드 모드로 동작
+        
+        # 화면 중앙에 위치 설정
+        screen = QApplication.primaryScreen().geometry()
+        window_size = self.load_window.geometry()
+        center_x = (screen.width() - window_size.width()) // 2
+        center_y = int(screen.height() * 0.4 - window_size.height() // 2)
+        
+        self.load_window.move(center_x, center_y)
+        self.load_window.show()
 
     def update_temperature(self, value, index):
         temp = value / 2
@@ -730,7 +732,7 @@ class UserSettingWindow(QWidget):
         self.temp_displays[index].update()
     
     def save_and_close(self):
-        # 모든 온도값 저장
+        # 현재 설정을 저장하고 창 닫기
         for i, scroll in enumerate(self.scrolls):
             UserSettingWindow.saved_temps[i] = scroll.value() / 2
         self.close()
@@ -739,6 +741,56 @@ class UserSettingWindow(QWidget):
         if event.type() == QEvent.WindowDeactivate:
             self.close()
         return super().eventFilter(obj, event)
+
+# 저장 선택 창 추가
+class SaveSelectWindow(QWidget):
+    def __init__(self, temps_to_save):
+        super().__init__()
+        self.temps_to_save = temps_to_save
+        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_ShowWithoutActivating)
+        self.installEventFilter(self)
+        self.initUI()
+    
+    def initUI(self):
+        self.setFixedSize(600, 400)
+        
+        layout = QHBoxLayout()
+        layout.setSpacing(10)
+        
+        # 5개의 저장 버튼 생성
+        for i in range(5):
+            save_btn = RotatedButton(f'사용자 설정 {i+1}')
+            save_btn.setFixedSize(100, 350)
+            save_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #f0f0f0;
+                    border: 2px solid #ddd;
+                    border-radius: 10px;
+                    font-size: 16px;
+                }
+                QPushButton:hover {
+                    background-color: #e0e0e0;
+                }
+            """)
+            save_btn.clicked.connect(lambda checked, x=i: self.save_to_slot(x))
+            layout.addWidget(save_btn)
+        
+        self.setLayout(layout)
+    
+    def save_to_slot(self, slot):
+        # 선택한 슬롯에 온도 저장
+        filename = f'user_setting_{slot+1}.txt'
+        with open(filename, 'w') as f:
+            f.write(','.join(map(str, self.temps_to_save)))
+        self.close()
+    
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.WindowDeactivate:
+            self.close()
+        return super().eventFilter(obj, event)
+
+
 
 class ReservationWindow(QWidget):
     saved_hour = 0  # 초기값을 0시로 변경
