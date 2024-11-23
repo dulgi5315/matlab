@@ -468,18 +468,13 @@ class StepSettingWindow(QWidget):
             QScrollBar::handle:vertical {
                 background: #888888;
                 border-radius: 3px;
-                min-height: 30px;  /* 핸들의 최소 크기를 30px로 설정 */
-                max-height: 30px;  /* 핸들의 최대 크기를 30px로 설정 */
-                margin: 0px 4px;   /* 좌우 여백 추가 */
+                min-height: 20px;
             }
             QScrollBar::handle:vertical:hover {
                 background: #777777;
             }
             QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
                 height: 0px;
-            }
-            QScrollBar::sub-page:vertical, QScrollBar::add-page:vertical {
-                background: white;  /* 스크롤바 배경색 설정 */
             }
         """)
         self.scroll.valueChanged.connect(self.update_step)
