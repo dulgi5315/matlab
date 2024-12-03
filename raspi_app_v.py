@@ -749,7 +749,7 @@ class SaveSelectWindow(QWidget):
         super().__init__()
         self.temps_to_save = temps_to_save
         self.is_save_mode = temps_to_save is not None
-        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)  # WindowStaysOnTopHint 추가
+        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_ShowWithoutActivating)
         self.installEventFilter(self)
         self.initUI()
@@ -757,20 +757,10 @@ class SaveSelectWindow(QWidget):
     def initUI(self):
         self.setFixedSize(600, 400)
         
-        # 메인 레이아웃
-        main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(20, 20, 20, 20)
-        
-        # 제목 레이블 추가
-        title = "저장할 위치 선택" if self.is_save_mode else "불러올 위치 선택"
-        title_label = QLabel(title)
-        title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("font-size: 18px; font-weight: bold; margin-bottom: 20px;")
-        main_layout.addWidget(title_label)
-        
         # 버튼 레이아웃
-        button_layout = QHBoxLayout()
-        button_layout.setSpacing(10)
+        layout = QHBoxLayout()
+        layout.setSpacing(10)
+        layout.setContentsMargins(20, 20, 20, 20)
         
         # 5개의 버튼 생성
         for i in range(5):
@@ -792,9 +782,9 @@ class SaveSelectWindow(QWidget):
                 save_btn.clicked.connect(lambda checked, x=i: self.save_to_slot(x))
             else:
                 save_btn.clicked.connect(lambda checked, x=i: self.load_from_slot(x))
-            button_layout.addWidget(save_btn)
+            layout.addWidget(save_btn)
         
-        main_layout.addLayout(button_layout)
+        self.setLayout(layout)
     
     def save_to_slot(self, slot):
         # 선택한 슬롯에 온도 저장
