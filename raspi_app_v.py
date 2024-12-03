@@ -760,7 +760,7 @@ class SaveSelectWindow(QWidget):
         
         # 5개의 저장 버튼 생성
         for i in range(5):
-            save_btn = RotatedButton(f'사용자 설정 {i+1}')
+            save_btn = RotatedButton(f'사용자 {i+1}')
             save_btn.setFixedSize(100, 350)
             save_btn.setStyleSheet("""
                 QPushButton {
