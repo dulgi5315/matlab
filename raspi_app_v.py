@@ -542,6 +542,7 @@ class StepSettingWindow(QWidget):
             self.close()
         return super().eventFilter(obj, event)
 
+# 사용자 설정 창
 class UserSettingWindow(QWidget):
     saved_temps = [25.0, 25.0, 25.0]
     
@@ -742,11 +743,12 @@ class UserSettingWindow(QWidget):
             self.close()
         return super().eventFilter(obj, event)
 
-# 저장 선택 창 추가
+# 저장 선택 창
 class SaveSelectWindow(QWidget):
     def __init__(self, temps_to_save):
         super().__init__()
         self.temps_to_save = temps_to_save
+        self.is_save_mode = temps_to_save is not None  # 저장 모드인지 확인
         self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_ShowWithoutActivating)
         self.installEventFilter(self)
@@ -758,9 +760,10 @@ class SaveSelectWindow(QWidget):
         layout = QHBoxLayout()
         layout.setSpacing(10)
         
-        # 5개의 저장 버튼 생성
+        # 5개의 버튼 생성
         for i in range(5):
-            save_btn = RotatedButton(f'사용자 {i+1}')
+            btn_text = f'사용자 {i+1}'
+            save_btn = RotatedButton(btn_text)
             save_btn.setFixedSize(100, 350)
             save_btn.setStyleSheet("""
                 QPushButton {
@@ -773,7 +776,10 @@ class SaveSelectWindow(QWidget):
                     background-color: #e0e0e0;
                 }
             """)
-            save_btn.clicked.connect(lambda checked, x=i: self.save_to_slot(x))
+            if self.is_save_mode:
+                save_btn.clicked.connect(lambda checked, x=i: self.save_to_slot(x))
+            else:
+                save_btn.clicked.connect(lambda checked, x=i: self.load_from_slot(x))
             layout.addWidget(save_btn)
         
         self.setLayout(layout)
@@ -785,13 +791,31 @@ class SaveSelectWindow(QWidget):
             f.write(','.join(map(str, self.temps_to_save)))
         self.close()
     
+    def load_from_slot(self, slot):
+        # 선택한 슬롯에서 온도 불러오기
+        filename = f'user_setting_{slot+1}.txt'
+        try:
+            with open(filename, 'r') as f:
+                temps = list(map(float, f.read().split(',')))
+                # UserSettingWindow의 스크롤바와 디스플레이 업데이트
+                parent = self.parent()
+                if parent and len(temps) == 3:
+                    for i, temp in enumerate(temps):
+                        parent.scrolls[i].setValue(int(temp * 2))
+                        parent.temp_displays[i].temp = temp
+                        parent.temp_displays[i].update()
+        except FileNotFoundError:
+            # 파일이 없는 경우 처리
+            pass
+        self.close()
+    
     def eventFilter(self, obj, event):
         if event.type() == QEvent.WindowDeactivate:
             self.close()
         return super().eventFilter(obj, event)
 
 
-
+# 에약 설정 창
 class ReservationWindow(QWidget):
     saved_hour = 0  # 초기값을 0시로 변경
     saved_minute = 0  # 초기값을 0분으로 변경
