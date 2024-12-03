@@ -791,23 +791,34 @@ class SaveSelectWindow(QWidget):
             f.write(','.join(map(str, self.temps_to_save)))
         self.close()
     
-    def load_from_slot(self, slot):
-        # 선택한 슬롯에서 온도 불러오기
-        filename = f'user_setting_{slot+1}.txt'
-        try:
-            with open(filename, 'r') as f:
-                temps = list(map(float, f.read().split(',')))
-                # UserSettingWindow의 스크롤바와 디스플레이 업데이트
+def load_from_slot(self, slot):
+    # 선택한 슬롯에서 온도 불러오기
+    filename = f'user_setting_{slot+1}.txt'
+    try:
+        with open(filename, 'r') as f:
+            content = f.read().strip()  # 앞뒤 공백 제거
+            if not content:  # 파일이 비어있는 경우
+                return
+            
+            temps = []
+            for temp_str in content.split(','):
+                try:
+                    temps.append(float(temp_str))
+                except ValueError:
+                    continue  # 변환할 수 없는 값은 건너뜀
+            
+            # 유효한 온도값이 3개인 경우에만 업데이트
+            if len(temps) == 3:
                 parent = self.parent()
-                if parent and len(temps) == 3:
+                if parent:
                     for i, temp in enumerate(temps):
                         parent.scrolls[i].setValue(int(temp * 2))
                         parent.temp_displays[i].temp = temp
                         parent.temp_displays[i].update()
-        except FileNotFoundError:
-            # 파일이 없는 경우 처리
-            pass
-        self.close()
+    except FileNotFoundError:
+        # 파일이 없는 경우 처리
+        pass
+    self.close()
     
     def eventFilter(self, obj, event):
         if event.type() == QEvent.WindowDeactivate:
