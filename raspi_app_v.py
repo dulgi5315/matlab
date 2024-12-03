@@ -3,11 +3,26 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 import sys
 from datetime import datetime
+import serial
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        # 시리얼 통신 설정
+        try:
+            self.serial = serial.Serial('/dev/ttyACM0', 9600, timeout=1)  # 아두이노 연결
+        except:
+            self.serial = None
+            print("아두이노 연결 실패")
+        
+        self.temperatures = ['0.0', '0.0', '0.0']  # 초기 온도값
         self.initUI()
+        
+        # 온도 갱신 타이머 설정
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update_temperatures)
+        self.timer.start(3000)  # 3초마다 갱신
+        
         # 윈도우가 표시된 후 모드 설정창 열기
         QTimer.singleShot(100, self.show_mode_window)
         
@@ -66,8 +81,8 @@ class MainWindow(QMainWindow):
                 painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, self.text)
 
 		# 상단 사각형 3개
-        temperatures = ['36.5', '37.0', '37.5']
-        for temp in temperatures:
+        temperatures = self.temperatures  # 초기 온도값 사용
+        for i, temp in enumerate(temperatures):
             box = QFrame()
             box.setFrameStyle(QFrame.Box | QFrame.Plain)
             box.setStyleSheet("""
@@ -82,6 +97,7 @@ class MainWindow(QMainWindow):
             # 온도 라벨 추가
             layout = QVBoxLayout(box)
             label = RotatedLabel(temp)
+            setattr(self, f'temp_label_{i}', label)  # 레이블 참조 저장
             layout.addWidget(label)
             top_layout.addWidget(box)
         
@@ -139,6 +155,33 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
+
+    def update_temperatures(self):
+        if self.serial is None:
+            return
+            
+        try:
+            if self.serial.in_waiting:
+                # 시리얼에서 데이터 읽기
+                line = self.serial.readline().decode().strip()
+                temps = line.split(',')
+                
+                if len(temps) == 3:
+                    # 유효한 온도값만 업데이트
+                    for i, temp in enumerate(temps):
+                        try:
+                            temp_float = float(temp)
+                            self.temperatures[i] = f'{temp_float:.1f}'
+                        except ValueError:
+                            continue
+                    
+                    # 온도 표시 레이블 업데이트
+                    for i, temp in enumerate(self.temperatures):
+                        if hasattr(self, f'temp_label_{i}'):
+                            getattr(self, f'temp_label_{i}').text = temp
+                            getattr(self, f'temp_label_{i}').update()
+        except:
+            print("시리얼 통신 오류")
         
     def show_menu(self):
         self.menu_window = MenuWindow()
