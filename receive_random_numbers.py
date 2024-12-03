@@ -2,7 +2,7 @@ import serial
 import time
 
 # 시리얼 포트와 baud rate 설정
-ser = serial.Serial('/dev/ttyUSB0', 9600)  # '/dev/ttyUSB0'는 아두이노가 연결된 포트로 변경해야 합니다
+ser = serial.Serial('/dev/ttyACM0', 9600)  # '/dev/ttyUSB0'는 아두이노가 연결된 포트로 변경해야 합니다
 time.sleep(2)  # 시리얼 포트가 안정화될 때까지 대기
 
 try:
