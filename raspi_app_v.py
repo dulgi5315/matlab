@@ -811,12 +811,18 @@ class SaveSelectWindow(QWidget):
                 
                 # 유효한 온도값이 3개인 경우에만 업데이트
                 if len(temps) == 3:
-                    parent = self.parent()
-                    if parent:
-                        for i, temp in enumerate(temps):
-                            parent.scrolls[i].setValue(int(temp * 2))
-                            parent.temp_displays[i].temp = temp
-                            parent.temp_displays[i].update()
+                    # UserSettingWindow의 saved_temps 업데이트
+                    UserSettingWindow.saved_temps = temps
+                    
+                    # 현재 열려있는 UserSettingWindow 찾기
+                    for widget in QApplication.topLevelWidgets():
+                        if isinstance(widget, UserSettingWindow):
+                            # 스크롤바와 디스플레이 업데이트
+                            for i, temp in enumerate(temps):
+                                widget.scrolls[i].setValue(int(temp * 2))
+                                widget.temp_displays[i].temp = temp
+                                widget.temp_displays[i].update()
+                            break
         except FileNotFoundError:
             # 파일이 없는 경우 처리
             pass
