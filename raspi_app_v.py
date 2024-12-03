@@ -717,7 +717,6 @@ class UserSettingWindow(QWidget):
 
     def show_load_window(self):
         self.load_window = SaveSelectWindow(None)
-        self.load_window.setParent(self)  # 부모 위젯 설정
         
         # 화면 중앙에 위치 설정
         screen = QApplication.primaryScreen().geometry()
@@ -749,8 +748,8 @@ class SaveSelectWindow(QWidget):
     def __init__(self, temps_to_save):
         super().__init__()
         self.temps_to_save = temps_to_save
-        self.is_save_mode = temps_to_save is not None  # 저장 모드인지 확인
-        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
+        self.is_save_mode = temps_to_save is not None
+        self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)  # WindowStaysOnTopHint 추가
         self.setAttribute(Qt.WA_ShowWithoutActivating)
         self.installEventFilter(self)
         self.initUI()
@@ -758,8 +757,20 @@ class SaveSelectWindow(QWidget):
     def initUI(self):
         self.setFixedSize(600, 400)
         
-        layout = QHBoxLayout()
-        layout.setSpacing(10)
+        # 메인 레이아웃
+        main_layout = QVBoxLayout(self)
+        main_layout.setContentsMargins(20, 20, 20, 20)
+        
+        # 제목 레이블 추가
+        title = "저장할 위치 선택" if self.is_save_mode else "불러올 위치 선택"
+        title_label = QLabel(title)
+        title_label.setAlignment(Qt.AlignCenter)
+        title_label.setStyleSheet("font-size: 18px; font-weight: bold; margin-bottom: 20px;")
+        main_layout.addWidget(title_label)
+        
+        # 버튼 레이아웃
+        button_layout = QHBoxLayout()
+        button_layout.setSpacing(10)
         
         # 5개의 버튼 생성
         for i in range(5):
@@ -781,9 +792,9 @@ class SaveSelectWindow(QWidget):
                 save_btn.clicked.connect(lambda checked, x=i: self.save_to_slot(x))
             else:
                 save_btn.clicked.connect(lambda checked, x=i: self.load_from_slot(x))
-            layout.addWidget(save_btn)
+            button_layout.addWidget(save_btn)
         
-        self.setLayout(layout)
+        main_layout.addLayout(button_layout)
     
     def save_to_slot(self, slot):
         # 선택한 슬롯에 온도 저장
