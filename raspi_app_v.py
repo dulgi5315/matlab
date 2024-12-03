@@ -791,6 +791,20 @@ class SaveSelectWindow(QWidget):
         filename = f'user_setting_{slot+1}.txt'
         with open(filename, 'w') as f:
             f.write(','.join(map(str, self.temps_to_save)))
+        
+        # UserSettingWindow의 saved_temps 업데이트
+        UserSettingWindow.saved_temps = self.temps_to_save
+        
+        # 현재 열려있는 UserSettingWindow 찾기
+        for widget in QApplication.topLevelWidgets():
+            if isinstance(widget, UserSettingWindow):
+                # 스크롤바와 디스플레이 업데이트
+                for i, temp in enumerate(self.temps_to_save):
+                    widget.scrolls[i].setValue(int(temp * 2))
+                    widget.temp_displays[i].temp = temp
+                    widget.temp_displays[i].update()
+                break
+        
         self.close()
     
     def load_from_slot(self, slot):
