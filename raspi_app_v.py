@@ -16,6 +16,9 @@ class MainWindow(QMainWindow):
             print("아두이노 연결 실패")
         
         self.temperatures = ['0.0', '0.0', '0.0']  # 초기 온도값
+        # 예약 시간 전송을 위한 인스턴스 변수 추가
+        self.reserved_hour = 0
+        self.reserved_minute = 0
         self.initUI()
         
         # 온도 갱신 타이머 설정
@@ -209,6 +212,20 @@ class MainWindow(QMainWindow):
         
         self.mode_window.move(center_x, center_y)
         self.mode_window.show()
+
+    # 예약 시간 전송 메서드 추가
+    def send_reservation_time(self, hour, minute):
+        if self.serial is None:
+            print("아두이노 연결되지 않음")
+            return
+            
+        try:
+            # 'R'은 예약 시간 설정 명령어를 나타냄
+            command = f"R{hour:02d}{minute:02d}\n"
+            self.serial.write(command.encode())
+            print(f"예약 시간 전송: {hour:02d}:{minute:02d}")
+        except:
+            print("시리얼 통신 오류")
 
 class MenuWindow(QWidget):
     def __init__(self, parent=None):
@@ -1033,6 +1050,17 @@ class ReservationWindow(QWidget):
     def save_and_close(self):
         ReservationWindow.saved_hour = self.hour_scroll.value()
         ReservationWindow.saved_minute = self.minute_scroll.value()
+        
+        # MainWindow 인스턴스 찾기
+        for widget in QApplication.topLevelWidgets():
+            if isinstance(widget, MainWindow):
+                # 예약 시간 전송
+                widget.send_reservation_time(
+                    self.hour_scroll.value(),
+                    self.minute_scroll.value()
+                )
+                break
+                
         self.close()
     
     def eventFilter(self, obj, event):
