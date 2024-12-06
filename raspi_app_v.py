@@ -931,6 +931,9 @@ class SaveSelectWindow(QWidget):
                     widget.scrolls[i].setValue(int(temp * 2))
                     widget.temp_displays[i].temp = temp
                     widget.temp_displays[i].update()
+
+                # UserSettingWindow를 다시 보이게 함
+                widget.show()
                 break
         
         self.close()
@@ -964,6 +967,9 @@ class SaveSelectWindow(QWidget):
                                 widget.scrolls[i].setValue(int(temp * 2))
                                 widget.temp_displays[i].temp = temp
                                 widget.temp_displays[i].update()
+
+                            # UserSettingWindow를 다시 보이게 함
+                            widget.show()
                             break
         except FileNotFoundError:
             # 파일이 없는 경우 처리
