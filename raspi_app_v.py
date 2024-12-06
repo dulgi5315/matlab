@@ -16,9 +16,6 @@ class MainWindow(QMainWindow):
             print("아두이노 연결 실패")
         
         self.temperatures = ['0.0', '0.0', '0.0']  # 초기 온도값
-        # 예약 시간 전송을 위한 인스턴스 변수 추가
-        self.reserved_hour = 0
-        self.reserved_minute = 0
         self.initUI()
         
         # 온도 갱신 타이머 설정
@@ -167,6 +164,11 @@ class MainWindow(QMainWindow):
             if self.serial.in_waiting:
                 # 시리얼에서 데이터 읽기
                 line = self.serial.readline().decode().strip()
+
+
+                print(line)
+                
+                
                 temps = line.split(',')
                 
                 if len(temps) == 3:
@@ -175,7 +177,6 @@ class MainWindow(QMainWindow):
                         try:
                             temp_float = float(temp)
                             self.temperatures[i] = f'{temp_float:.1f}'
-                            print(self.temperatures[i])
                         except ValueError:
                             continue
                     
@@ -214,7 +215,7 @@ class MainWindow(QMainWindow):
         self.mode_window.move(center_x, center_y)
         self.mode_window.show()
 
-    # 예약 시간 전송 메서드 추가
+    # 예약 시간 전송 메서드
     def send_reservation_time(self, hour, minute):
         if self.serial is None:
             print("아두이노 연결되지 않음")
@@ -225,6 +226,48 @@ class MainWindow(QMainWindow):
             command = f"R{hour:02d}{minute:02d}\n"
             self.serial.write(command.encode())
             print(f"예약 시간 전송: {hour:02d}:{minute:02d}")
+        except:
+            print("시리얼 통신 오류")
+
+    # 정온 설정 온도 전송 메서드
+    def send_temperature(self, temp):
+        if self.serial is None:
+            print("아두이노 연결되지 않음")
+            return
+            
+        try:
+            # 'T'는 정온 설정 명령어를 나타냄
+            command = f"T{temp:.1f}\n"
+            self.serial.write(command.encode())
+            print(f"정온 설정 온도 전송: {temp:.1f}°C")
+        except:
+            print("시리얼 통신 오류")
+
+    # 단계 설정값 전송 메서드
+    def send_step_setting(self, step):
+        if self.serial is None:
+            print("아두이노 연결되지 않음")
+            return
+            
+        try:
+            # 'S'는 단계 설정 명령어를 나타냄
+            command = f"S{step}\n"
+            self.serial.write(command.encode())
+            print(f"단계 설정값 전송: {step}단계")
+        except:
+            print("시리얼 통신 오류")
+
+     # 사용자 설정 온도 전송 메서드
+    def send_user_setting(self, temps):
+        if self.serial is None:
+            print("아두이노 연결되지 않음")
+            return
+            
+        try:
+            # 'U'는 사용자 설정 온도 명령어를 나타냄
+            command = f"U{temps[0]:.1f},{temps[1]:.1f},{temps[2]:.1f}\n"
+            self.serial.write(command.encode())
+            print(f"사용자 설정 온도 전송: {temps[0]:.1f}°C, {temps[1]:.1f}°C, {temps[2]:.1f}°C")
         except:
             print("시리얼 통신 오류")
 
@@ -495,6 +538,14 @@ class TemperatureSettingWindow(QWidget):
     
     def save_and_close(self):
         TemperatureSettingWindow.saved_temperature = self.scroll.value() / 2
+        
+        # MainWindow 인스턴스 찾기
+        for widget in QApplication.topLevelWidgets():
+            if isinstance(widget, MainWindow):
+                # 정온 설정 온도 전송
+                widget.send_temperature(self.scroll.value() / 2)
+                break
+                
         self.close()
     
     def eventFilter(self, obj, event):
@@ -596,6 +647,13 @@ class StepSettingWindow(QWidget):
     
     def save_and_close(self):
         StepSettingWindow.saved_step = self.scroll.value()
+        # MainWindow 인스턴스 찾기
+        for widget in QApplication.topLevelWidgets():
+            if isinstance(widget, MainWindow):
+                # 단계 설정값 전송
+                widget.send_step_setting(self.scroll.value())
+                break
+                
         self.close()
     
     def eventFilter(self, obj, event):
@@ -794,9 +852,18 @@ class UserSettingWindow(QWidget):
         self.temp_displays[index].update()
     
     def save_and_close(self):
-        # 현재 설정을 저장하고 창 닫기
-        for i, scroll in enumerate(self.scrolls):
-            UserSettingWindow.saved_temps[i] = scroll.value() / 2
+        temps = []
+        for scroll in self.scrolls:
+            temps.append(scroll.value() / 2)
+        UserSettingWindow.saved_temps = temps
+        
+        # MainWindow 인스턴스 찾기
+        for widget in QApplication.topLevelWidgets():
+            if isinstance(widget, MainWindow):
+                # 사용자 설정 온도 전송
+                widget.send_user_setting(temps)
+                break
+                
         self.close()
     
     def eventFilter(self, obj, event):
