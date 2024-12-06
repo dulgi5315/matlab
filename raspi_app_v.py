@@ -1040,8 +1040,6 @@ class ReservationWindow(QWidget):
             self.close()
         return super().eventFilter(obj, event)
 
-
-
 # 버튼 세로방향 회전
 class RotatedButton(QPushButton):
     def __init__(self, text):
@@ -1060,9 +1058,6 @@ class RotatedButton(QPushButton):
         rect.moveCenter(QPoint(0, 0))  # 중앙 정렬
         
         painter.drawText(rect, Qt.AlignCenter, self.btn_text)
-
-
-
 
 
 if __name__ == '__main__':
