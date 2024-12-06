@@ -101,13 +101,13 @@ class MainWindow(QMainWindow):
             layout.addWidget(label)
             top_layout.addWidget(box)
         
-        # 종료 버튼
+        # 중지 버튼
         exit_btn = QPushButton('×')
         exit_btn.setFixedSize(50, 50)  # 크기 축소
-        exit_btn.clicked.connect(self.close)
+        exit_btn.clicked.connect(self.send_abort_msg)
         exit_btn.setStyleSheet("""
             QPushButton {
-                font-size: 24px;
+                font-size: 24px;`
                 background-color: #ff6b6b;
                 color: white;
                 border: none;
@@ -268,6 +268,20 @@ class MainWindow(QMainWindow):
             command = f"U{temps[0]:.1f},{temps[1]:.1f},{temps[2]:.1f}\n"
             self.serial.write(command.encode())
             print(f"사용자 설정 온도 전송: {temps[0]:.1f}°C, {temps[1]:.1f}°C, {temps[2]:.1f}°C")
+        except:
+            print("시리얼 통신 오류")
+
+    # 중지 명령 전송 메서드
+    def send_abort_msg(self):
+        if self.serial is None:
+            print("아두이노 연결되지 않음")
+            return
+            
+        try:
+            # 'X'는 중지 명령어를 나타냄
+            command = "A\n"
+            self.serial.write(command.encode())
+            print("중지 명령 전송")
         except:
             print("시리얼 통신 오류")
 
