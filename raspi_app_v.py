@@ -63,7 +63,7 @@ class MainWindow(QMainWindow):
                 border-radius: 8px;
             }
         """)
-        # 여기에 클릭 이`벤트 연결 추가
+        # 여기에 클릭 이벤트 연결 추가
         menu_btn.clicked.connect(self.show_menu)
         top_layout.addWidget(menu_btn)
         
@@ -175,6 +175,7 @@ class MainWindow(QMainWindow):
                         try:
                             temp_float = float(temp)
                             self.temperatures[i] = f'{temp_float:.1f}'
+                            print(self.temperatures[i])
                         except ValueError:
                             continue
                     
