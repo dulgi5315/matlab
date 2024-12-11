@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
         # 온도 갱신 타이머 설정
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_temperatures)
-        self.timer.start(3000)  # 3초마다 갱신
+        self.timer.start(5000)  # 3초마다 갱신
         
         # 윈도우가 표시된 후 모드 설정창 열기
         QTimer.singleShot(100, self.show_mode_window)
@@ -164,11 +164,6 @@ class MainWindow(QMainWindow):
             if self.serial.in_waiting:
                 # 시리얼에서 데이터 읽기
                 line = self.serial.readline().decode().strip()
-
-
-                print(line)
-                
-                
                 temps = line.split(',')
                 
                 if len(temps) == 3:
@@ -497,7 +492,7 @@ class TemperatureSettingWindow(QWidget):
         # 스크롤바
         self.scroll = QScrollBar(Qt.Vertical)
         self.scroll.setMinimum(50)  # 25.0도
-        self.scroll.setMaximum(80)  # 40.0도
+        self.scroll.setMaximum(110)  # 55.0도
         self.scroll.setValue(int(self.saved_temperature * 2))
         self.scroll.setFixedHeight(350)  # 스크롤바 길이 증가
         self.scroll.setFixedWidth(60)   # 스크롤바 너비
@@ -727,7 +722,7 @@ class UserSettingWindow(QWidget):
             # 스크롤바
             scroll = QScrollBar(Qt.Vertical)
             scroll.setMinimum(50)
-            scroll.setMaximum(80)
+            scroll.setMaximum(110)
             scroll.setValue(int(self.saved_temps[i] * 2))
             scroll.setFixedHeight(350)
             scroll.setFixedWidth(60)
