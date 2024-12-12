@@ -532,7 +532,7 @@ class ModeSettingWindow(QWidget):
 
 #정온 설정 창
 class TemperatureSettingWindow(QWidget):
-    saved_temperature = 25.0
+    saved_temperature = 30.0
     
     def __init__(self):
         super().__init__()
@@ -570,7 +570,7 @@ class TemperatureSettingWindow(QWidget):
         
         # 스크롤바
         self.scroll = QScrollBar(Qt.Vertical)
-        self.scroll.setMinimum(50)  # 25.0도
+        self.scroll.setMinimum(60)  # 30.0도
         self.scroll.setMaximum(110)  # 55.0도
         self.scroll.setValue(int(self.saved_temperature * 2))
         self.scroll.setFixedHeight(350)  # 스크롤바 길이 증가
@@ -751,7 +751,7 @@ class StepSettingWindow(QWidget):
 
 # 사용자 설정 창
 class UserSettingWindow(QWidget):
-    saved_temps = [25.0, 25.0, 25.0]
+    saved_temps = [30.0, 30.0, 30.0]
     
     def __init__(self):
         super().__init__()
@@ -800,7 +800,7 @@ class UserSettingWindow(QWidget):
             
             # 스크롤바
             scroll = QScrollBar(Qt.Vertical)
-            scroll.setMinimum(50)
+            scroll.setMinimum(60)
             scroll.setMaximum(110)
             scroll.setValue(int(self.saved_temps[i] * 2))
             scroll.setFixedHeight(350)
