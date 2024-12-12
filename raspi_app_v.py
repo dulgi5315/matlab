@@ -9,7 +9,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # CSV 파일 경로 설정
-        self.csv_path = 'temperature_log.csv'
+        self.csv_path = 'temperature_log1.csv'
         self.check_csv_file()  # CSV 파일 존재 확인 및 생성
 
         # 시리얼 통신 설정
@@ -29,6 +29,24 @@ class MainWindow(QMainWindow):
         
         # 윈도우가 표시된 후 모드 설정창 열기
         QTimer.singleShot(100, self.show_mode_window)
+
+
+
+
+        # 자동 단계 변경을 위한 변수 추가
+        self.auto_step = 0
+        self.step_sequence = [0, 1, 2, 1, 0]  # 변경된 단계 순서
+        self.sequence_index = 0  # 현재 순서 인덱스
+        
+        self.step_timer = QTimer()
+        self.step_timer.timeout.connect(self.update_auto_step)
+        self.step_timer.start(1800000)  # 30분 = 1800000ms
+        
+        # 초기 단계값 아두이노로 전송
+        self.send_auto_step()
+
+
+
         
     def initUI(self):
         self.setWindowTitle('전기매트 컨트롤러')
@@ -310,6 +328,35 @@ class MainWindow(QMainWindow):
                     writer.writerow([timestamp] + [f'{t:.1f}' if t is not None else 'N/A' for t in temperatures])
             except Exception as e:
                 print(f"CSV 파일 저장 오류: {e}")
+
+
+
+
+    def update_auto_step(self):
+        # 다음 인덱스로 이동
+        self.sequence_index = (self.sequence_index + 1) % len(self.step_sequence)
+        self.auto_step = self.step_sequence[self.sequence_index]
+        
+        # 변경된 단계값 아두이노로 전송
+        self.send_auto_step()
+        
+        # 로그 출력
+        print(f"자동 단계 변경: {self.auto_step}")
+
+    def send_auto_step(self):
+        if self.serial is None:
+            print("아두이노 연결되지 않음")
+            return
+            
+        try:
+            # 'C'는 단계 설정 명령어를 나타냄 (기존 코드와 동일한 명령어 사용)
+            command = f"C{self.auto_step}\n"
+            self.serial.write(command.encode())
+            print(f"자동 단계 전송: {self.auto_step}")
+        except:
+            print("시리얼 통신 오류")
+
+
 
 
 class MenuWindow(QWidget):
