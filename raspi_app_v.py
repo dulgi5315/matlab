@@ -9,7 +9,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # CSV 파일 경로 설정
-        self.csv_path = 'temperature_log1.csv'
+        self.csv_path = 'temperature_log2.csv'
         self.check_csv_file()  # CSV 파일 존재 확인 및 생성
 
         # 시리얼 통신 설정
