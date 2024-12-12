@@ -341,7 +341,7 @@ class MainWindow(QMainWindow):
         self.send_auto_step()
         
         # 로그 출력
-        print(f"자동 단계 변경: {self.auto_step}")
+        print(f"수면 단계 변경: {self.auto_step}")
 
     def send_auto_step(self):
         if self.serial is None:
@@ -349,10 +349,10 @@ class MainWindow(QMainWindow):
             return
             
         try:
-            # 'C'는 단계 설정 명령어를 나타냄 (기존 코드와 동일한 명령어 사용)
+            # 'C'는 수면 설정 명령어를 나타냄
             command = f"C{self.auto_step}\n"
             self.serial.write(command.encode())
-            print(f"자동 단계 전송: {self.auto_step}")
+            print(f"수면 단계 전송: {self.auto_step}")
         except:
             print("시리얼 통신 오류")
 
