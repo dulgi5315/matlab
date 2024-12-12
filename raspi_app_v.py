@@ -8,6 +8,10 @@ import serial
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        # CSV 파일 경로 설정
+        self.csv_path = 'temperature_log.csv'
+        self.check_csv_file()  # CSV 파일 존재 확인 및 생성
+
         # 시리얼 통신 설정
         try:
             self.serial = serial.Serial('/dev/ttyACM0', 9600, timeout=1)  # 아두이노 연결
@@ -21,7 +25,7 @@ class MainWindow(QMainWindow):
         # 온도 갱신 타이머 설정
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_temperatures)
-        self.timer.start(5000)  # 3초마다 갱신
+        self.timer.start(5000)  # 5초마다 갱신
         
         # 윈도우가 표시된 후 모드 설정창 열기
         QTimer.singleShot(100, self.show_mode_window)
@@ -167,19 +171,24 @@ class MainWindow(QMainWindow):
                 temps = line.split(',')
                 
                 if len(temps) == 3:
-                    # 유효한 온도값만 업데이트
+                    # 유효한 온도값 처리
+                    valid_temps = []
                     for i, temp in enumerate(temps):
                         try:
                             temp_float = float(temp)
                             self.temperatures[i] = f'{temp_float:.1f}'
+                            valid_temps.append(temp_float)
                         except ValueError:
-                            continue
+                            valid_temps.append(None)
                     
                     # 온도 표시 레이블 업데이트
                     for i, temp in enumerate(self.temperatures):
                         if hasattr(self, f'temp_label_{i}'):
                             getattr(self, f'temp_label_{i}').text = temp
                             getattr(self, f'temp_label_{i}').update()
+
+                    # CSV 파일에 저장
+                    self.save_to_csv(valid_temps)
         except:
             print("시리얼 통신 오류")
         
@@ -279,6 +288,29 @@ class MainWindow(QMainWindow):
             print("중지 명령 전송")
         except:
             print("시리얼 통신 오류")
+
+    # CSV 파일 존재 확인 및 생성
+    def check_csv_file(self):
+        import os
+        if not os.path.exists(self.csv_path):
+            with open(self.csv_path, 'w', newline='') as f:
+                import csv
+                writer = csv.writer(f)
+                writer.writerow(['Timestamp', 'Temperature1', 'Temperature2', 'Temperature3'])
+
+    # CSV 파일에 온도 데이터 저장
+    def save_to_csv(self, temperatures):
+            import csv
+            from datetime import datetime
+            
+            try:
+                with open(self.csv_path, 'a', newline='') as f:
+                    writer = csv.writer(f)
+                    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    writer.writerow([timestamp] + [f'{t:.1f}' if t is not None else 'N/A' for t in temperatures])
+            except Exception as e:
+                print(f"CSV 파일 저장 오류: {e}")
+
 
 class MenuWindow(QWidget):
     def __init__(self, parent=None):
