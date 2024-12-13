@@ -9,7 +9,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         # CSV 파일 경로 설정
-        self.csv_path = 'temperature_log2.csv'
+        self.csv_path = 'temperature_log3.csv'
         self.check_csv_file()  # CSV 파일 존재 확인 및 생성
 
         # 시리얼 통신 설정
@@ -33,17 +33,17 @@ class MainWindow(QMainWindow):
 
 
 
-        # 자동 단계 변경을 위한 변수 추가
-        self.auto_step = 0
-        self.step_sequence = [0, 1, 2, 1, 0]  # 변경된 단계 순서
-        self.sequence_index = 0  # 현재 순서 인덱스
+        # # 자동 단계 변경을 위한 변수 추가
+        # self.auto_step = 0
+        # self.step_sequence = [0, 1, 2, 1, 0]  # 변경된 단계 순서
+        # self.sequence_index = 0  # 현재 순서 인덱스
         
-        self.step_timer = QTimer()
-        self.step_timer.timeout.connect(self.update_auto_step)
-        self.step_timer.start(1800000)  # 30분 = 1800000ms
+        # self.step_timer = QTimer()
+        # self.step_timer.timeout.connect(self.update_auto_step)
+        # self.step_timer.start(1800000)  # 30분 = 1800000ms
         
-        # 초기 단계값 아두이노로 전송
-        self.send_auto_step()
+        # # 초기 단계값 아두이노로 전송
+        # self.send_auto_step()
 
 
 
@@ -332,29 +332,29 @@ class MainWindow(QMainWindow):
 
 
 
-    def update_auto_step(self):
-        # 다음 인덱스로 이동
-        self.sequence_index = (self.sequence_index + 1) % len(self.step_sequence)
-        self.auto_step = self.step_sequence[self.sequence_index]
+    # def update_auto_step(self):
+    #     # 다음 인덱스로 이동
+    #     self.sequence_index = (self.sequence_index + 1) % len(self.step_sequence)
+    #     self.auto_step = self.step_sequence[self.sequence_index]
         
-        # 변경된 단계값 아두이노로 전송
-        self.send_auto_step()
+    #     # 변경된 단계값 아두이노로 전송
+    #     self.send_auto_step()
         
-        # 로그 출력
-        print(f"수면 단계 변경: {self.auto_step}")
+    #     # 로그 출력
+    #     print(f"수면 단계 변경: {self.auto_step}")
 
-    def send_auto_step(self):
-        if self.serial is None:
-            print("아두이노 연결되지 않음")
-            return
+    # def send_auto_step(self):
+    #     if self.serial is None:
+    #         print("아두이노 연결되지 않음")
+    #         return
             
-        try:
-            # 'C'는 수면 설정 명령어를 나타냄
-            command = f"C{self.auto_step}\n"
-            self.serial.write(command.encode())
-            print(f"수면 단계 전송: {self.auto_step}")
-        except:
-            print("시리얼 통신 오류")
+    #     try:
+    #         # 'C'는 수면 설정 명령어를 나타냄
+    #         command = f"C{self.auto_step}\n"
+    #         self.serial.write(command.encode())
+    #         print(f"수면 단계 전송: {self.auto_step}")
+    #     except:
+    #         print("시리얼 통신 오류")
 
 
 
