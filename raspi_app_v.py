@@ -144,7 +144,34 @@ class MainWindow(QMainWindow):
         
         # 중간 여백
         main_layout.addStretch()
+
+        # 하단 영역 추가
+        bottom_widget = QWidget()
+        bottom_layout = QHBoxLayout(bottom_widget)
+        bottom_layout.setSpacing(10)  # 위젯 간 간격 설정
+        bottom_layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
+
+        # 5개의 사각형 생성
+        for i in range(5):
+            box = QFrame()
+            box.setFrameStyle(QFrame.Box | QFrame.Plain)
+            box.setStyleSheet("""
+                QFrame {
+                    border: 2px solid #ddd;
+                    background-color: white;
+                    border-radius: 8px;
+                }
+            """)
+            box.setFixedSize(120, 180)  # 사각형 크기 설정
+            
+            # 레이블 추가
+            layout = QVBoxLayout(box)
+            label = RotatedLabel(f"사각형 {i+1}")  # 임시 텍스트
+            layout.addWidget(label)
+            bottom_layout.addWidget(box)
         
+        main_layout.addWidget(bottom_widget)
+
         # 메인 레이아웃에 추가
         main_layout = QVBoxLayout()
         main_layout.addWidget(top_widget)
