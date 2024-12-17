@@ -11,7 +11,7 @@ class MainWindow(QMainWindow):
         self.mode_name = ""  # 모드 이름 저장 변수
         self.target_temps = ["0.0", "0.0", "0.0"]  # 목표 온도 저장 변수
         # CSV 파일 경로 설정
-        self.csv_path = 'temperature_log3.csv'
+        self.csv_path = 'temperature_log5.csv'
         self.check_csv_file()  # CSV 파일 존재 확인 및 생성
 
         # 시리얼 통신 설정
