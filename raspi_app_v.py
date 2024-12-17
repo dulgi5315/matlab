@@ -162,7 +162,11 @@ class MainWindow(QMainWindow):
                     border-radius: 8px;
                 }
             """)
-            box.setFixedSize(120, 225)  # 사각형 크기 설정
+            
+            if i >= 2:
+                box.setFixedSize(120, 225) 
+            else:
+                box.setFixedSize(120, 180)
             
             # 레이블 추가
             layout = QVBoxLayout(box)
