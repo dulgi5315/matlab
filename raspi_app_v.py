@@ -145,31 +145,9 @@ class MainWindow(QMainWindow):
         # 중간 여백
         main_layout.addStretch()
         
-        # 하단 사각형 영역
-        bottom_widget = QWidget()
-        bottom_layout = QHBoxLayout(bottom_widget)
-        bottom_layout.setContentsMargins(0, 0, 0, 0)
-        
-        # 메뉴 버튼 너비만큼 왼쪽 여백 추가
-        bottom_layout.addSpacing(20)  # 메뉴 버튼(50) + 간격(10)
-        
-        # 하단 사각형
-        bottom_rect = QWidget()
-        bottom_rect.setFixedWidth(180 * 3 + 45)  # 상단 사각형 3개의 너비(180*3) + 사이 간격(10*2)
-        bottom_rect.setStyleSheet("""
-            QWidget {
-                background-color: white;
-                border: 2px solid #ddd;
-                border-radius: 10px;
-            }
-        """)
-        bottom_layout.addWidget(bottom_rect)
-        bottom_layout.addSpacing(20)
-        
         # 메인 레이아웃에 추가
         main_layout = QVBoxLayout()
         main_layout.addWidget(top_widget)
-        main_layout.addWidget(bottom_widget)
         main_layout.addSpacing(20)
         main_layout.setContentsMargins(20, 20, 20, 20)
         
