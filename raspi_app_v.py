@@ -216,9 +216,9 @@ class MainWindow(QMainWindow):
                     
                     # 온도 표시 레이블 업데이트
                     for i, temp in enumerate(self.temperatures):
-                        if hasattr(self, f'temp_label_{i}'):
-                            getattr(self, f'temp_label_{i}').text = temp
-                            getattr(self, f'temp_label_{i}').update()
+                        if hasattr(self, f'temp_label_{i}°C'):
+                            getattr(self, f'temp_label_{i}°C').text = temp
+                            getattr(self, f'temp_label_{i}°C').update()
 
                     # CSV 파일에 저장
                     self.save_to_csv(valid_temps)
