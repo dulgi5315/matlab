@@ -93,7 +93,7 @@ class MainWindow(QMainWindow):
                 border-radius: 8px;
             }
         """)
-        text_box.setFixedSize(120, 180)
+        text_box.setFixedSize(120, 250)
 
         # 현재 온도 텍스트 레이블
         text_layout = QVBoxLayout(text_box)
@@ -113,7 +113,7 @@ class MainWindow(QMainWindow):
                     border-radius: 8px;
                 }
             """)
-            box.setFixedSize(150, 180)
+            box.setFixedSize(150, 250)
             
             # 온도 라벨 추가
             layout = QVBoxLayout(box)
@@ -162,7 +162,7 @@ class MainWindow(QMainWindow):
                     border-radius: 8px;
                 }
             """)
-            box.setFixedSize(120, 180)  # 사각형 크기 설정
+            box.setFixedSize(120, 250)  # 사각형 크기 설정
             
             # 레이블 추가
             layout = QVBoxLayout(box)
