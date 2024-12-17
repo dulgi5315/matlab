@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
                 painter.setFont(self.font)
                 painter.translate(self.width()/2, self.height()/2)
                 painter.rotate(-90)
-                painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, self.text)
+                painter.drawText(QRect(-100, -15, 200, 30), Qt.AlignCenter, self.text)
 
         text_box = QFrame()
         text_box.setFrameStyle(QFrame.Box | QFrame.Plain)
