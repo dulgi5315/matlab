@@ -120,7 +120,7 @@ class MainWindow(QMainWindow):
             # 온도 라벨 추가
             layout = QVBoxLayout(box)
             label = RotatedLabel(temp)
-            setattr(self, f'temp_label_{i}°C', label)  # 레이블 참조 저장
+            setattr(self, f'temp_label_{i}', label)  # 레이블 참조 저장
             layout.addWidget(label)
             top_layout.addWidget(box)
         
@@ -330,7 +330,7 @@ class MainWindow(QMainWindow):
             return
             
         try:
-            # 'X'는 중지 명령어를 나타냄
+            # 'A'는 중지 명령어를 나타냄
             command = "A\n"
             self.serial.write(command.encode())
             print("중지 명령 전송")
@@ -625,13 +625,15 @@ class TemperatureSettingWindow(QWidget):
         self.temp_display.update()  # 화면 갱신
     
     def save_and_close(self):
-        TemperatureSettingWindow.saved_temperature = self.scroll.value() / 2
+        temp = self.scroll.value() / 2
+        TemperatureSettingWindow.saved_temperature = temp
         
         # MainWindow 인스턴스 찾기
         for widget in QApplication.topLevelWidgets():
             if isinstance(widget, MainWindow):
+                widget.update_mode_and_temps("정온 설정", [temp, temp, temp])
                 # 정온 설정 온도 전송
-                widget.send_temperature(self.scroll.value() / 2)
+                widget.send_temperature(temp)
                 break
                 
         self.close()
@@ -734,12 +736,14 @@ class StepSettingWindow(QWidget):
         self.step_display.update()
     
     def save_and_close(self):
-        StepSettingWindow.saved_step = self.scroll.value()
+        step = self.scroll.value()
+        StepSettingWindow.saved_step = step
         # MainWindow 인스턴스 찾기
         for widget in QApplication.topLevelWidgets():
             if isinstance(widget, MainWindow):
+                widget.update_mode_and_temps("단계 설정", [step, step, step])
                 # 단계 설정값 전송
-                widget.send_step_setting(self.scroll.value())
+                widget.send_step_setting(step)
                 break
                 
         self.close()
@@ -948,6 +952,7 @@ class UserSettingWindow(QWidget):
         # MainWindow 인스턴스 찾기
         for widget in QApplication.topLevelWidgets():
             if isinstance(widget, MainWindow):
+                widget.update_mode_and_temps("사용자 설정", temps)
                 # 사용자 설정 온도 전송
                 widget.send_user_setting(temps)
                 break
