@@ -216,9 +216,9 @@ class MainWindow(QMainWindow):
                     
                     # 온도 표시 레이블 업데이트
                     for i, temp in enumerate(self.temperatures):
-                        if hasattr(self, f'temp_label_{i}°C'):
-                            getattr(self, f'temp_label_{i}°C').text = temp
-                            getattr(self, f'temp_label_{i}°C').update()
+                        if hasattr(self, f'temp_label_{i}'):
+                            getattr(self, f'temp_label_{i}').text = temp
+                            getattr(self, f'temp_label_{i}').update()
 
                     # CSV 파일에 저장
                     self.save_to_csv(valid_temps)
@@ -320,7 +320,7 @@ class MainWindow(QMainWindow):
         
         for i, label in enumerate(self.target_temp_labels):
             if label:
-                label.text = f"{temps[i]}°C"
+                label.text = f"{temps[i]}"
                 label.update()
 
     # 중지 명령 전송 메서드
@@ -334,6 +334,7 @@ class MainWindow(QMainWindow):
             command = "A\n"
             self.serial.write(command.encode())
             print("중지 명령 전송")
+            self.update_mode_and_temps("", ["0.0", "0.0", "0.0"])
         except:
             print("시리얼 통신 오류")
 
