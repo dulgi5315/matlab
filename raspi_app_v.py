@@ -8,6 +8,8 @@ import serial
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.mode_name = ""  # 모드 이름 저장 변수
+        self.target_temps = ["0.0", "0.0", "0.0"]  # 목표 온도 저장 변수
         # CSV 파일 경로 설정
         self.csv_path = 'temperature_log3.csv'
         self.check_csv_file()  # CSV 파일 존재 확인 및 생성
@@ -118,7 +120,7 @@ class MainWindow(QMainWindow):
             # 온도 라벨 추가
             layout = QVBoxLayout(box)
             label = RotatedLabel(temp)
-            setattr(self, f'temp_label_{i}', label)  # 레이블 참조 저장
+            setattr(self, f'temp_label_{i}°C', label)  # 레이블 참조 저장
             layout.addWidget(label)
             top_layout.addWidget(box)
         
@@ -151,6 +153,9 @@ class MainWindow(QMainWindow):
         bottom_layout.setSpacing(10)  # 위젯 간 간격 설정
         bottom_layout.setContentsMargins(0, 0, 0, 0)  # 여백 제거
 
+        self.mode_label = None  # 모드 표시 레이블
+        self.target_temp_labels = []  # 목표 온도 표시 레이블들
+
         # 5개의 사각형 생성
         for i in range(5):
             box = QFrame()
@@ -170,7 +175,15 @@ class MainWindow(QMainWindow):
             
             # 레이블 추가
             layout = QVBoxLayout(box)
-            label = RotatedLabel(f"사각형 {i+1}")  # 임시 텍스트
+            if i == 0:
+                label = RotatedLabel(self.mode_name)  # 모드 이름 표시
+                self.mode_label = label
+            elif i == 1:
+                label = RotatedLabel("목표 온도")
+            else:
+                label = RotatedLabel(self.target_temps[i-2])  # 목표 온도 표시
+                self.target_temp_labels.append(label)
+            
             layout.addWidget(label)
             bottom_layout.addWidget(box)
         
@@ -294,6 +307,21 @@ class MainWindow(QMainWindow):
             print(f"사용자 설정 온도 전송: {temps[0]:.1f}°C, {temps[1]:.1f}°C, {temps[2]:.1f}°C")
         except:
             print("시리얼 통신 오류")
+
+    # 모드와 온도를 업데이트하는 메서드 추가
+    def update_mode_and_temps(self, mode_name, temps):
+        self.mode_name = mode_name
+        self.target_temps = temps
+        
+        # 레이블 업데이트
+        if self.mode_label:
+            self.mode_label.text = mode_name
+            self.mode_label.update()
+        
+        for i, label in enumerate(self.target_temp_labels):
+            if label:
+                label.text = f"{temps[i]}°C"
+                label.update()
 
     # 중지 명령 전송 메서드
     def send_abort_msg(self):
