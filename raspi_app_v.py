@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
 
         # 시리얼 통신 설정
         try:
-            self.serial = serial.Serial('/dev/ttyACM0', 115200, timeout=1)  # 아두이노 연결
+            self.serial = serial.Serial('/dev/ttyACM0', 9600, timeout=1)  # 아두이노 연결
         except:
             self.serial = None
             print("아두이노 연결 실패")
