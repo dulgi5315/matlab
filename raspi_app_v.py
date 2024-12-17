@@ -325,18 +325,18 @@ class MainWindow(QMainWindow):
 
     # 중지 명령 전송 메서드
     def send_abort_msg(self):
-        if self.serial is None:
-            print("아두이노 연결되지 않음")
-            return
+        # if self.serial is None:
+        #     print("아두이노 연결되지 않음")
+        #     return
             
-        try:
+        # try:
             # 'A'는 중지 명령어를 나타냄
             command = "A\n"
             self.serial.write(command.encode())
             print("중지 명령 전송")
             self.update_mode_and_temps("", ["0.0", "0.0", "0.0"])
-        except:
-            print("시리얼 통신 오류")
+        # except:
+        #     print("시리얼 통신 오류")
 
     # CSV 파일 존재 확인 및 생성
     def check_csv_file(self):
