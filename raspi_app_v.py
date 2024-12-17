@@ -25,29 +25,11 @@ class MainWindow(QMainWindow):
         # 온도 갱신 타이머 설정
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_temperatures)
-        self.timer.start(5000)  # 5초마다 갱신
+        self.timer.start(1000)  # 5초마다 갱신
         
         # 윈도우가 표시된 후 모드 설정창 열기
         QTimer.singleShot(100, self.show_mode_window)
-
-
-
-
-        # # 자동 단계 변경을 위한 변수 추가
-        # self.auto_step = 0
-        # self.step_sequence = [0, 1, 2, 1, 0]  # 변경된 단계 순서
-        # self.sequence_index = 0  # 현재 순서 인덱스
-        
-        # self.step_timer = QTimer()
-        # self.step_timer.timeout.connect(self.update_auto_step)
-        # self.step_timer.start(1800000)  # 30분 = 1800000ms
-        
-        # # 초기 단계값 아두이노로 전송
-        # self.send_auto_step()
-
-
-
-        
+    
     def initUI(self):
         self.setWindowTitle('전기매트 컨트롤러')
         self.showFullScreen()
@@ -102,6 +84,23 @@ class MainWindow(QMainWindow):
                 painter.rotate(-90)
                 painter.drawText(QRect(-50, -15, 100, 30), Qt.AlignCenter, self.text)
 
+        text_box = QFrame()
+        text_box.setFrameStyle(QFrame.Box | QFrame.Plain)
+        text_box.setStyleSheet("""
+            QFrame {
+                border: 2px solid #ddd;
+                background-color: white;
+                border-radius: 8px;
+            }
+        """)
+        text_box.setFixedSize(120, 180)
+
+        # 현재 온도 텍스트 레이블
+        text_layout = QVBoxLayout(text_box)
+        text_label = RotatedLabel("현재 온도")
+        text_layout.addWidget(text_label)
+        top_layout.addWidget(text_box)
+
 		# 상단 사각형 3개
         temperatures = self.temperatures  # 초기 온도값 사용
         for i, temp in enumerate(temperatures):
@@ -114,7 +113,7 @@ class MainWindow(QMainWindow):
                     border-radius: 8px;
                 }
             """)
-            box.setFixedSize(180, 180)
+            box.setFixedSize(150, 180)
             
             # 온도 라벨 추가
             layout = QVBoxLayout(box)
@@ -328,36 +327,6 @@ class MainWindow(QMainWindow):
                     writer.writerow([timestamp] + [f'{t:.1f}' if t is not None else 'N/A' for t in temperatures])
             except Exception as e:
                 print(f"CSV 파일 저장 오류: {e}")
-
-
-
-
-    # def update_auto_step(self):
-    #     # 다음 인덱스로 이동
-    #     self.sequence_index = (self.sequence_index + 1) % len(self.step_sequence)
-    #     self.auto_step = self.step_sequence[self.sequence_index]
-        
-    #     # 변경된 단계값 아두이노로 전송
-    #     self.send_auto_step()
-        
-    #     # 로그 출력
-    #     print(f"수면 단계 변경: {self.auto_step}")
-
-    # def send_auto_step(self):
-    #     if self.serial is None:
-    #         print("아두이노 연결되지 않음")
-    #         return
-            
-    #     try:
-    #         # 'C'는 수면 설정 명령어를 나타냄
-    #         command = f"C{self.auto_step}\n"
-    #         self.serial.write(command.encode())
-    #         print(f"수면 단계 전송: {self.auto_step}")
-    #     except:
-    #         print("시리얼 통신 오류")
-
-
-
 
 class MenuWindow(QWidget):
     def __init__(self, parent=None):
