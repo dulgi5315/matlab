@@ -332,7 +332,7 @@ class MainWindow(QMainWindow):
         # try:
             # 'A'는 중지 명령어를 나타냄
             command = "A\n"
-            self.serial.write(command.encode())
+            # self.serial.write(command.encode())
             print("중지 명령 전송")
             self.update_mode_and_temps("", ["0.0", "0.0", "0.0"])
         # except:
